@@ -4,9 +4,13 @@
 
 2. 需要的资料
   * 护照
+  
   * 身份证 [奇怪，就是需要](https://www.homeaffairs.gov.au/help-text/eplus/Pages/elp-h1810.aspx#China) 
   
   
 3.参考网站
   [CCC 电报码查询](https://apps.chasedream.com/chinese-commercial-code/)
+  
   [签证官网](http://www.vfsglobal.cn/Australia/China/visitor_visa.html)
+  
+  [IMMI Sample](http://www.mafengwo.cn/i/8215430.html)
