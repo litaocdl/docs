@@ -14,6 +14,7 @@
   [签证官网](http://www.vfsglobal.cn/Australia/China/visitor_visa.html)
   
   [IMMI Sample](http://www.mafengwo.cn/i/8215430.html)
+  [IMMI sample2](http://www.mafengwo.cn/i/6713981.html)
 
 
 他人笑我太疯癫我笑他人看不穿！
