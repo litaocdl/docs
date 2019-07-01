@@ -33,6 +33,9 @@ check kubelet log
 
 ## restart
 
-`swapoff -a`
-`systemctl start docker`
-`systemctl start kubelet`
+both master and work nodes
+```
+swapoff -a
+systemctl start docker
+systemctl start kubelet
+```
