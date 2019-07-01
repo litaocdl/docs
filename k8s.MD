@@ -29,3 +29,10 @@ curl -H "Authorization: Bearer qpafj9.i2g5lucthim4wkgc" https://9.30.146.114:644
 
 check kubelet log
 `journalctl -u kubelet`
+
+
+## restart
+
+`swapoff -a`
+`systemctl start docker`
+`systemctl start kubelet`
