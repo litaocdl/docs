@@ -11,3 +11,21 @@
 cat cluster-cert.txt
   2. copy the kube configure to local
    kubectl --kubeconfig=./kubeconfig get nodes.
+
+
+## Kubectl auth
+
+### use bootstrap token auth
+
+bootstrap token can retrieved using `kubeadm token list`
+
+apiserver need enable `-enable-bootstrap-token-auth=true`
+```
+curl -H "Authorization: Bearer qpafj9.i2g5lucthim4wkgc" https://9.30.146.114:6443/version -k
+```
+
+
+## logs
+
+check kubelet log
+`journalctl -u kubelet`
