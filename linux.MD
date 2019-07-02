@@ -44,4 +44,4 @@ the remote side, the lookup would be very expensive, here we could use the `sssd
 
 ![ssd architecure](https://github.com/litaocdl/docs/blob/master/pics/sssd.png)
 
-
+[how pam ssd nss work together](https://community.hortonworks.com/articles/175124/how-pam-nss-ssd-work-together-on-linux-os.html)
