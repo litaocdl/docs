@@ -144,3 +144,8 @@ ldapsearch -H ldapi:// -D cn=bluldap,dc=blustratus,dc=com -w NGZjNmJhZWY1NzY0 -b
 ```
 ldapsearch -H ldapi:// -Y EXTERNAL -b ou=People,dc=blustratus,dc=com
 ```
+
+query the ldap command using SASL
+```
+ldapsearch -H ldapi:// -Y EXTERNAL -b "cn=config" -LLL -Q "olcDatabase=*"
+```
