@@ -19,4 +19,25 @@ curl https://9.30.146.114:6443/version   --cert ./client.cert --key ./client.key
 
 ```
 
+### use curl to query ldap
+
+format see [reference](https://docs.oracle.com/cd/E19396-01/817-7616/ldurl.html)
+
+<base dn>: start from which points to query
+<attributes>: what attributes to query
+<scope>: query scope base/one/sub
+<filter>: default objectClass=*
+ 
+ 
+```
+
+curl -B "ldap://<ip>/<base dn>?<attributes>?<scope>/<filter>" -u "<bind DN>:<bind passwd>"
+
+```
+example 
+
+```
+curl -B "ldap://ip/dc=xxx,dc=com?*?sub?uid=xxx" -u "cn=xxx,dc=xxx,dc=com:xxx"
+
+```
 
