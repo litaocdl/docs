@@ -135,3 +135,12 @@ ldapi means ldap over ipc, if the ldap client and ldap server are in the same ma
 ldapsearch -H ldapi:// -D cn=bluldap,dc=blustratus,dc=com -w NGZjNmJhZWY1NzY0 -b ou=People,dc=blustratus,dc=com
 
 ```
+
+### SASL
+
+`SASL` is short for Simple Authentication Security Layer. `EXTERNAL` is one of mechanism SASL supports, which relay on TLS.
+`ldapsearch` and `ldapmodify` support SASL.
+
+```
+ldapsearch -H ldapi:// -Y EXTERNAL -b ou=People,dc=blustratus,dc=com
+```
