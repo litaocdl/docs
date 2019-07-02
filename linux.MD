@@ -40,9 +40,8 @@ shadow: Shadow user passwords.
 
 
 `pam` and `nss` could be configure to do authenticate, by providing the `pam_ldap.so` and `nss_ldap.so`, if the ldap is in
-the remote side, the lookup would be very expensive, here we could use the `sssd` daemon services, which could have local cache
-for the remote catalogs. 
+the remote side, the lookup would be very expensive, here we could use the `sssd` daemon services, which could have local cache for the remote catalogs. 
 
-
+![ssd architecure](https://github.com/litaocdl/docs/blob/master/pics/sssd.png)
 
 
