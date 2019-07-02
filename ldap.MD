@@ -149,3 +149,64 @@ query the ldap command using SASL
 ```
 ldapsearch -H ldapi:// -Y EXTERNAL -b "cn=config" -LLL -Q "olcDatabase=*"
 ```
+
+
+
+### LDAP server 
+
+[reference for ubnuntu](https://help.ubuntu.com/lts/serverguide/openldap-server.html)
+
+install open ldap `sudo apt install slapd`
+
+reconfig the basedn and rootdn
+
+```
+sudo dpkg-reconfigure slapd
+```
+
+after ubuntu 18, the slapd supports dynamically configure the ldap without restart the server, the ldap is configure by slapd itself using ldif. the configuraiton file is under `/etc/ldap/slapd.d/` folder in DIT format.
+
+Get all slapd-config database 
+
+```
+ldapsearch -Q -LLL -Y EXTERNAL -H ldapi:/// -b cn=config dn
+===
+Result and explain
+cn=config: global settings
+
+cn=module{0},cn=config: a dynamically loaded module
+
+cn=schema,cn=config: contains hard-coded system-level schema
+
+cn={0}core,cn=schema,cn=config: the hard-coded core schema
+
+cn={1}cosine,cn=schema,cn=config: the cosine schema
+
+cn={2}nis,cn=schema,cn=config: the nis schema
+
+cn={3}inetorgperson,cn=schema,cn=config: the inetorgperson schema
+
+olcBackend={0}mdb,cn=config: the 'mdb' backend storage type
+
+olcDatabase={-1}frontend,cn=config: frontend database, default settings for other databases
+
+olcDatabase={0}config,cn=config: slapd configuration database (cn=config)
+
+olcDatabase={1}mdb,cn=config: your database instance (dc=example,dc=com)
+
+```
+
+
+Get the base dn and root dn 
+
+```
+ldapsearch -x -LLL -H ldap:/// -b dc=fyre,dc=ibm,dc=com dn
+===
+dn: dc=fyre,dc=ibm,dc=com : base dn
+
+dn: cn=admin,dc=fyre,dc=ibm,dc=com : root dn
+
+# if there are entries, it is listed here. 
+```
+
+
