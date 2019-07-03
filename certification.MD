@@ -3,9 +3,10 @@
 
 ### Public key algorithm 
 
-Currently there are three public key algorithm in popular. `RSA public key` `DSA Public key` and `ECDSA Public key`. openssl provides ways to generate those different public keys in command line 
+Currently there are three public key algorithm in popular. `RSA public key` `DSA Public key` and `ECDSA Public key`. 
+openssl provides ways to generate those different public keys in command line 
 
-`RSA public key`
+#### `RSA public key`
 
  RSA stands for `Rivest, Shamir and Adelman`, which is most popular public-key algorithm, it could be used for key-exchange (encrypt data) and sign data. since rsa used for key-exchange, the compromise of a private key can be used to decrypt any previously traffic, it is recommended to use `perfect forward secrecy` afforded by Diffe-Hellman key exchange. 
  
@@ -16,6 +17,11 @@ Currently there are three public key algorithm in popular. `RSA public key` `DSA
  `public key` is composed with e and n
  `private key` is componsed with d and n, for rsa private key (PEM),e is also included. 
  
+  openssl sub commands
+  
+  `openssl genrsa`: gen rsa private key
+  `openssl rsa`: handle with rsa keys
+  
  The following commands could be used to generate a RSA private key in PEM format. this PEM format is in RSA Private key format which contains the public key modulus. 
  
  ```
@@ -67,7 +73,7 @@ Currently there are three public key algorithm in popular. `RSA public key` `DSA
  [reference public key](https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art054)
  
  
- `DSA public key`
+ #### `DSA public key`
  
  DSA: Digital Signature Algorithm
  
@@ -78,7 +84,14 @@ Currently there are three public key algorithm in popular. `RSA public key` `DSA
  `public key`: y
  `private key`: x
  
- The following command is used to generate dsa public key. as the above algorithm, dsa need a param which composed with g,p and q, so to generate dsa public/private key, we need first generate the dsa params. 
+ openssl sub commands
+ 
+ `openssl dsaparam`: gen dsa params. 
+ `openssl gendsa`: gen dsa private key
+ `openssl dsa` : handle with dsa keys
+ 
+ The following command is used to generate dsa public key. as the above algorithm, dsa need a param which composed with 
+ g,p and q, so to generate dsa public/private key, we need first generate the dsa params. 
  
  Generate dsaparam `dsa_param.pem`
  
@@ -133,9 +146,12 @@ Currently there are three public key algorithm in popular. `RSA public key` `DSA
  G:
  ```
  
-`ECDSA Public Keys`
+#### `ECDSA Public Keys`
  
  Relay on the ellipic curve division (ECD).  ECDSA keys are much smaller than RSA and DSA, and ECDSA predefined a list of params which could be used to generate keys. 
+ 
+  `openssl ecparam`: handle ecparam and gen ec private keys.
+  `openssl ec`: handle with ec keys
  
  Get list of predefined ec param 
  ```
@@ -183,8 +199,8 @@ BggqhkjOPQMBAQ==
  openssl ecparam -name prime192v2 -genkey -noout -out ec_key.pem
  ```
  
-Then we can use the ec param created above to create ec private key. the ec_key.pem like rsa and dsa key, are composed with
-params, public and private key. 
+Then we can use the ec param created above to create ec private key. the ec_key.pem like rsa and dsa key, are composed 
+with params, public and private key. 
 
 ```
 openssl ecparam -in ecparam.pem -genkey -noout -out ec_key.pem
@@ -213,6 +229,14 @@ pub:
 ASN1 OID:
 NIST CURVE:
 ```
- ## Certificate format
+## x509 certification 
+
+The above private key and public key are pure private/public key, which could not be treated as x509 certificate. 
+x509 certificate is composed with two parts
+
+- public key
+- User identify
+
+## Certificate format
  
- ##
+##
