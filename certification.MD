@@ -406,6 +406,7 @@ openssl req -x509 -newkey dsa:dsa_param.pem -keyout dsa_priv.pem -out dsa_cert.p
 openssl req -x509 -newkey ec:ecparam.pem -keyout ec_priv.pem -out ec_cert.pem
 ```
 - Use `csr` to generate x509 certificate
+
   To get the certificate signed by CA, instead of give them the private key (should not do this), we can create a
   csr and send to CA for sign, the result is a CA signed certificate.
   
