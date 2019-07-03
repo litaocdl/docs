@@ -25,13 +25,13 @@ openssl provides ways to generate those different public keys in command line
  The following commands could be used to generate a RSA private key in PEM format. this PEM format is in RSA Private key format which contains the public key modulus. 
  
  ```
- openssl genrsa -out key.pem 2048
+ openssl genrsa -out rsa_priv.pem 2048
  ```
  
  to check the content of the `key.pem` file. the `-noout` flag indicates not output the private key content. from the output, we can see this pem file contains both private key and public key.
  
  ```
- openssl rsa -text -in key.pem -noout
+ openssl rsa -text -in rsa_priv.pem -noout
  ===
  output:
           version           Version,
@@ -49,12 +49,12 @@ openssl provides ways to generate those different public keys in command line
  
  to retrieve the rsa public key from the key.pem out, we can issue 
  ```
- openssl rsa -in key.pem -pubout -out key.pub
+ openssl rsa -in rsa_priv.pem -pubout -out rsa_pub.pem
  ```
  
  to check the public key content,we can issue
  ```
- openssl rsa -text -pubin -in key.pub -noout
+ openssl rsa -text -pubin -in rsa_pub.pem -noout
  ==
  output:
    modulus           INTEGER,  -- n
@@ -65,10 +65,16 @@ openssl provides ways to generate those different public keys in command line
  To check if two key file are related, we can check the n `modulus` contains in the key file is equals or not
  
  ```
- openssl rsa -pubin -in key.pub -modulus -noout | openssl md5
- openssl rsa -in key.pem -modulus -noout | openssl md5
+ openssl rsa -pubin -in rsa_pub.pem -modulus -noout | openssl md5
+ openssl rsa -in rsa_priv.pem -modulus -noout | openssl md5
  
  ```
+ 
+ The above rsa_pub.pem is pure public key, which could not be used as certification, to use certification, we need
+ to create x509 public key (aka certificate)
+ 
+ 
+ 
  [reference rfc3447](https://tools.ietf.org/html/rfc3447#appendix-A.1.1)
  [reference public key](https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art054)
  
@@ -126,7 +132,7 @@ openssl provides ways to generate those different public keys in command line
  G:
  ```
  
- The above two steps could be combine together using `-genkey` of `dsaparam`
+ Alternately, The above two steps could be combine together using `-genkey` of `dsaparam`
  ```
  openssl dsaparam -genkey -out dsa_priv.pem
  ```
@@ -229,6 +235,9 @@ pub:
 ASN1 OID:
 NIST CURVE:
 ```
+
+[reference: matching a private key to a public key](https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art054)
+
 ## x509 certification 
 
 The above private key and public key are pure private/public key, which could not be treated as x509 certificate. 
@@ -236,6 +245,162 @@ x509 certificate is composed with two parts
 
 - public key
 - User identify
+
+we can generate the x509 public key (aka certification) using `openssl req -x509`
+
+- Using existing private key to extract and generate x509 public key.
+if `-out` is not provided, the public key will print
+in standout. during generate the rsa_cert.pem, it will privide you to input some extra indentify values. 
+from the output,we can see x509 public contains mush more information then regular public key. 
+
+generate rsa certificate
+
+```
+openssl req -x509 -key rsa_priv.pem -out rsa_cert.pem
+
+we could check the rsa_cert.pem 
+
+openssl x509 -in rsa_cert.pem -noout -text
+==
+Certificate:
+    Data:
+        Version: 3 (0x2) .  # x509 verisons, support v1,v2 and v3
+        Serial Number:
+            ff:0a:ff:45:8a:4b:6d:5e .  # this is the unique id 
+    Signature Algorithm: sha256WithRSAEncryption . # algorithm used to generate the signauture
+        Issuer: C=CN, ST=BJ, L=BJ, O=IBM, OU=IBM, CN=tao/emailAddress=litaocdl@cn.ibm.com  ## who issue the certificate
+        Validity               # date validity 
+            Not Before: Jul  3 09:26:21 2019 GMT
+            Not After : Aug  2 09:26:21 2019 GMT
+        Subject: C=CN, ST=BJ, L=BJ, O=IBM, OU=IBM, CN=tao/emailAddress=litaocdl@cn.ibm.com . ## user name
+        Subject Public Key Info:         ## public key info
+            Public Key Algorithm: rsaEncryption     
+                Public-Key: (2048 bit)
+                Modulus:
+                    xxxxxxxxx
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:    ## v3 extensions
+            X509v3 Subject Key Identifier:
+                D2:60:47:AA:89:3F:21:F3:5C:38:BC:27:A1:43:74:AA:19:BE:08:3F
+            X509v3 Authority Key Identifier:
+                keyid:D2:60:47:AA:89:3F:21:F3:5C:38:BC:27:A1:43:74:AA:19:BE:08:3F
+
+            X509v3 Basic Constraints:
+                CA:TRUE
+    Signature Algorithm: sha256WithRSAEncryption .  ## the signature for the who
+        xxxxxxx
+
+
+```
+
+generate ecdsa certificate
+
+```
+openssl req -x509 -key ec_key.pem -out ec_cert1.pem
+
+check the key
+openssl x509 -in ec_cert1.pem -text
+==
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            d5:01:27:dc:50:18:07:5c
+    Signature Algorithm: ecdsa-with-SHA256
+        Issuer: C=AU, ST=AU, L=AU, O=AU, OU=AU, CN=AU/emailAddress=AU
+        Validity
+            Not Before: Jul  3 10:07:38 2019 GMT
+            Not After : Aug  2 10:07:38 2019 GMT
+        Subject: C=AU, ST=AU, L=AU, O=AU, OU=AU, CN=AU/emailAddress=AU
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (192 bit)
+                pub:
+                    xxx
+                ASN1 OID: prime192v1
+                NIST CURVE: P-192
+        X509v3 extensions:
+            X509v3 Subject Key Identifier:
+                5E:1E:DB:B4:6A:DA:EB:67:99:77:38:50:7E:39:B9:41:2C:95:62:27
+            X509v3 Authority Key Identifier:
+                keyid:5E:1E:DB:B4:6A:DA:EB:67:99:77:38:50:7E:39:B9:41:2C:95:62:27
+
+            X509v3 Basic Constraints:
+                CA:TRUE
+    Signature Algorithm: ecdsa-with-SHA256
+       xxx
+
+```
+
+generate dsa certificate
+
+```
+openssl req -x509 -key dsa_priv.pem -out dsa_cert.pem
+
+openssl x509 -in dsa_cert.pem -text -noout
+output
+==
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            8a:83:12:ea:5f:08:50:9f
+    Signature Algorithm: dsa_with_SHA256
+        Issuer: C=CN, ST=BJ, L=BJ, O=IBM, OU=IBM, CN=tao/emailAddress=litaocdl@cn.ibm.com
+        Validity
+            Not Before: Jul  3 10:17:50 2019 GMT
+            Not After : Aug  2 10:17:50 2019 GMT
+        Subject: C=CN, ST=BJ, L=BJ, O=IBM, OU=IBM, CN=tao/emailAddress=litaocdl@cn.ibm.com
+        Subject Public Key Info:
+            Public Key Algorithm: dsaEncryption
+                pub:
+                    xxx
+                P:
+                    xxx
+                Q:
+                    xxx
+                G:
+                    xxx
+        X509v3 extensions:
+            X509v3 Subject Key Identifier:
+                71:B7:5F:4F:EB:7C:84:67:7E:75:F2:CC:8F:6C:E5:04:A3:88:02:90
+            X509v3 Authority Key Identifier:
+                keyid:71:B7:5F:4F:EB:7C:84:67:7E:75:F2:CC:8F:6C:E5:04:A3:88:02:90
+
+            X509v3 Basic Constraints:
+                CA:TRUE
+    Signature Algorithm: dsa_with_SHA256
+         r:
+            xxx
+         s:
+            xxx
+```
+
+- Generate the private key and x509 public key together
+
+Some options of `openssl req -x509`
+`-pubout`: By default if `-out` is not provided, certification file is print in startout, if `-pubout`, not out print the certification to standout, but also print the public key to standout. 
+
+`-newkey`: generate what kind of private/public key pair. support `rsa:<length>` ,`dsa:<dsaparam>` and `ec:<length>`
+`-keyout`: by default, private key is named as `privkey.pem`, using this option can rename the private key file.
+`-out`: by default, the certification is print to standout instead of file, use this option to write certificate key to file.
+
+```
+openssl req -x509 -newkey rsa:2048 -keyout rsa_priv.pem -out rsa_cert.pem
+
+```
+generate dsa key using dsa params
+```
+openssl req -x509 -newkey dsa:dsa_param.pem -keyout dsa_priv.pem -out dsa_cert.pem
+```
+
+generate ecdsa key using ecdsa params
+```
+openssl req -x509 -newkey ec:ecparam.pem -keyout ec_priv.pem -out ec_cert.pem
+```
+
+
+
 
 ## Certificate format
  
