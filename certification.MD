@@ -95,7 +95,7 @@ openssl provides ways to generate those different public keys in command line
  `public key`: y
  `private key`: x
  
- openssl sub commands
+ Openssl sub commands
  
  `openssl dsaparam`: gen dsa params. 
  `openssl gendsa`: gen dsa private key
@@ -243,7 +243,7 @@ NIST CURVE:
 
 [reference: matching a private key to a public key](https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art054)
 
-## x509 certification 
+## x509 certificate 
 
 The above private key and public key are pure private/public key, which could not be treated as x509 certificate. 
 x509 certificate is composed with two parts
@@ -251,17 +251,20 @@ x509 certificate is composed with two parts
 - public key
 - User identify
 
-we can generate the x509 public key (aka certification) using `openssl req -x509`
+and x509 certificate could be signed by own private key or by ca private key. if it is signed by its own private key, it is
+a self-signed certificate. 
+
+we can generate the x509 public key (aka certificate) using `openssl req -x509`
 
 - Using existing private key to extract and generate x509 public key.
 if `-out` is not provided, the public key will print
 in standout. during generate the rsa_cert.pem, it will privide you to input some extra indentify values. 
 from the output,we can see x509 public contains mush more information then regular public key. 
 
-generate rsa certificate
+- generate rsa certificate
 
 ```
-openssl req -x509 -key rsa_priv.pem -out rsa_cert.pem
+openssl req -x509 -new -key rsa_priv.pem -out rsa_cert.pem
 
 we could check the rsa_cert.pem 
 
@@ -297,11 +300,10 @@ Certificate:
 
 
 ```
-
-generate ecdsa certificate
+- generate ecdsa certificate
 
 ```
-openssl req -x509 -key ec_key.pem -out ec_cert1.pem
+openssl req -x509 -new -key ec_key.pem -out ec_cert1.pem
 
 check the key
 openssl x509 -in ec_cert1.pem -text
@@ -336,11 +338,10 @@ Certificate:
        xxx
 
 ```
-
-generate dsa certificate
+- generate dsa certificate
 
 ```
-openssl req -x509 -key dsa_priv.pem -out dsa_cert.pem
+openssl req -x509 -new -key dsa_priv.pem -out dsa_cert.pem
 
 openssl x509 -in dsa_cert.pem -text -noout
 output
@@ -389,24 +390,53 @@ Some options of `openssl req -x509`
 `-newkey`: generate what kind of private/public key pair. support `rsa:<length>` ,`dsa:<dsaparam>` and `ec:<length>`
 `-keyout`: by default, private key is named as `privkey.pem`, using this option can rename the private key file.
 `-out`: by default, the certification is print to standout instead of file, use this option to write certificate key to file.
-
+ 
+ - generate rsa x509 cert 
 ```
 openssl req -x509 -newkey rsa:2048 -keyout rsa_priv.pem -out rsa_cert.pem
 
 ```
-generate dsa key using dsa params
+ - generate dsa x509 cert  using dsa params
 ```
 openssl req -x509 -newkey dsa:dsa_param.pem -keyout dsa_priv.pem -out dsa_cert.pem
 ```
 
-generate ecdsa key using ecdsa params
+ - generate ecdsa x509 cert using ecdsa params
 ```
 openssl req -x509 -newkey ec:ecparam.pem -keyout ec_priv.pem -out ec_cert.pem
 ```
+- Use `csr` to generate x509 certificate
+  To get the certificate signed by CA, instead of give them the private key (should not do this), we can create a
+  csr and send to CA for sign, the result is a CA signed certificate.
+  
+  To better understand this process, we could split certificate request into two steps
+  
+  - Generate the csr based on the private key, notes there is no `-x509`, the result is csr, not certificate.
+    the below command will promote you to input the configuration value
+    
+       `openssl req -new -key rsa_priv.pem -out rsa.csr`
+       
+     we can also create a csr.conf file to provide those values, see [create csr conf](https://github.com/litaocdl/docs/blob/master/k8s.MD#use-openssl-to-generate-self-certification-for-x509-client-authentication)
+     
+       `openssl req -new -key rsa_priv.pem -out rsa.csr -conf csr.conf`
+       
+  - Generate the certificate using csr and signed by the private key.
+  
+      `openssl x509 -req -in rsa.csr -signkey rsa_priv.pem -out rsa_cert.pem`
 
-
-
+  so for steps two, if we are going to sign the csr from CA, we could send the csr to the CA and CA could issue
+  
+    `-CA`: the ca certificate file 
+    `-CAkey`: the ca private key
+    
+    ```
+    openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key \
+      -CAcreateserial -out server.crt -days 10000 \
+      -extensions v3_ext -extfile csr.conf
+    
+    ```
+## How PKI works 
 
 ## Certificate format
  
-##
+
