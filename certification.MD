@@ -243,7 +243,9 @@ NIST CURVE:
 
 [reference: matching a private key to a public key](https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art054)
 
+---
 ## x509 certificate 
+---
 
 The above private key and public key are pure private/public key, which could not be treated as x509 certificate. 
 x509 certificate is composed with two parts
@@ -252,22 +254,42 @@ x509 certificate is composed with two parts
 - User identify
 
 and x509 certificate could be signed by own private key or by ca private key. if it is signed by its own private key, it is
-a self-signed certificate. 
+a self-signed certificate, if it signed by CA, it is CA signed certification 
 
-we can generate the x509 public key (aka certificate) using `openssl req -x509`
+see the picture below:
 
-- Using existing private key to extract and generate x509 public key.
-if `-out` is not provided, the public key will print
-in standout. during generate the rsa_cert.pem, it will privide you to input some extra indentify values. 
-from the output,we can see x509 public contains mush more information then regular public key. 
+![](https://github.com/litaocdl/docs/blob/master/pics/ca_sign.png)
 
-- generate rsa certificate
 
+The following is details description and steps using openssl to handle x509 certification. 
+Some description for the openssl command
+
+ 1. `openssl x509`
+     Certification display and signing utility, [reference](https://linux.die.net/man/1/x509)
+     Options:
+     `-req`:  by default, `x509` expect the certificate as input, if `-req` is added, csr is expected as input.
+     `-signkey`: cause the input file be signed using supplied private key. 
+ 2. `openssl req`
+     Certification request and generating utility, [reference](https://linux.die.net/man/1/req)
+     `-x509`: by default, the req output is csr, if `-x509` is added, the outpus is a self signed certification.
+     `-new`: generates a new csr, promt the user for relevant filed values.  if `-key` is not provided, it will generate
+     the private key using the specified configuration file. 
+     `-key`: read the private key
+     `-newkey`: generate csr and new private key together. support `rsa:<length>` ,`dsa:<dsaparam>` and `ec:<length>`
+     `-out`: by default, the certification key will print in standout if -out is not privided. 
+     `-pubout`: By default public key is not print in standout, if `-pubout`, print the public key to standout. 
+     `-keyout`: by default, private key is named as `privkey.pem`, using this option can rename the private key file.
+
+
+**Generate x509 self-signed certificate**
+
+- generate rsa self-signed certificate using existing private key.
+
+if private key exists, generate a self-signed x509 certification using promoted information.
 ```
 openssl req -x509 -new -key rsa_priv.pem -out rsa_cert.pem
 
 we could check the rsa_cert.pem 
-
 openssl x509 -in rsa_cert.pem -noout -text
 ==
 Certificate:
@@ -382,37 +404,29 @@ Certificate:
             xxx
 ```
 
-- Generate the private key and x509 public key together
-
-Some options of `openssl req -x509`
-`-pubout`: By default if `-out` is not provided, certification file is print in startout, if `-pubout`, not out print the certification to standout, but also print the public key to standout. 
-
-`-newkey`: generate what kind of private/public key pair. support `rsa:<length>` ,`dsa:<dsaparam>` and `ec:<length>`
-`-keyout`: by default, private key is named as `privkey.pem`, using this option can rename the private key file.
-`-out`: by default, the certification is print to standout instead of file, use this option to write certificate key to file.
+- Generate the private key and x509 self-sgined certification together
  
- - generate rsa x509 cert 
 ```
+using rsa
 openssl req -x509 -newkey rsa:2048 -keyout rsa_priv.pem -out rsa_cert.pem
 
-```
- - generate dsa x509 cert  using dsa params
-```
+using dsa params
 openssl req -x509 -newkey dsa:dsa_param.pem -keyout dsa_priv.pem -out dsa_cert.pem
+
+ using ecdsa params
+openssl req -x509 -newkey ec:ecparam.pem -keyout ec_priv.pem -out ec_cert.pem
+
 ```
 
- - generate ecdsa x509 cert using ecdsa params
-```
-openssl req -x509 -newkey ec:ecparam.pem -keyout ec_priv.pem -out ec_cert.pem
-```
-- Use `csr` to generate x509 certificate
+- Use `csr` and `private key` to generate x509 certificate
 
   To get the certificate signed by CA, instead of give them the private key (should not do this), we can create a
-  csr and send to CA for sign, the result is a CA signed certificate.
+  csr and send to CA for sign, the result is a CA signed certificate. self-signed certification can also follow this 
+  process. 
   
   To better understand this process, we could split certificate request into two steps
   
-  - Generate the csr based on the private key, notes there is no `-x509`, the result is csr, not certificate.
+  1. Generate the csr based on the private key, notes there is no `-x509`, the result is csr, not certificate.
     the below command will promote you to input the configuration value
     
        `openssl req -new -key rsa_priv.pem -out rsa.csr`
@@ -421,22 +435,123 @@ openssl req -x509 -newkey ec:ecparam.pem -keyout ec_priv.pem -out ec_cert.pem
      
        `openssl req -new -key rsa_priv.pem -out rsa.csr -conf csr.conf`
        
-  - Generate the certificate using csr and signed by the private key.
+  2. Generate the certificate using csr and signed by the private key.
   
       `openssl x509 -req -in rsa.csr -signkey rsa_priv.pem -out rsa_cert.pem`
 
-  so for steps two, if we are going to sign the csr from CA, we could send the csr to the CA and CA could issue
-  
+    
+**Generate x509 internal CA signed certificate**
+
+For internal CA signed certification, we need CA certificate and CA private key exists to sign. `ca_cert.pem` and
+`ca_priv.pem`. 
+We will generate the csr using our own private key `rsa.csr` and leverage the `openssl x509` to sign
+
     `-CA`: the ca certificate file 
     `-CAkey`: the ca private key
     
     ```
-    openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key \
-      -CAcreateserial -out server.crt -days 10000 \
-      -extensions v3_ext -extfile csr.conf
-    
+    openssl x509 -req -in rsa.csr -CA ca_crt.pem -CAkey ca_key.pem \
+      -CAcreateserial -out rsa_crt.pem -days 10000 \
+      -extensions v3_ext -extfile csr.conf    
     ```
+
+
+**Generate x509 public CA-signed certificate**
+    
+For extenral CA signed certification, we need send the csr generated by our private key to CA for sign. the returned is certification file in various format. notes, we need keep our private key confidential. 
+
+## How https works
+
+see the picture below
+
+when client use browser to visit a https site, firstly, the https server will send its certification to the browser, this certification could be a self-signed certification, internal CA signed certification or public CA signed certification. A certification is combine of public key and user identity information and signatures. The browser will fisrt to verify if the
+hostname visited match the CN of the certification, if not, will report the unstrust warning. 
+
+Self-signed certification: 
+if it is a self-signed certification, the client browser will report warning that the certification is not trusted. unless we install this self-signed certification into our browser and trust it. 
+
+Internal CA signed certification:
+if it is a internal CA signed certification, browser will try to extract the DN of the `issuer` and look for installed trusted CA, find the match CA and use the public key of that CA to verify the signature of server certification. if the server certificaiton is signed by the internal CA's private key, then verification will success.
+
+match:
+
+`openssl x509 -in ca.crt -subject_hash` = `openssl x509 -in server.crt -issuer_hash`
+
+verify:
+
+`openssl verify -CAfile ca.crt server.crt`
+
+Private Key (intenral CA) --- sign server certification (encrypt the hash) --> signature 
+Public Key(internal CA)--- verify sign of server certification (encrypt the hash) --> signagure1
+
+if(signature == signagure1){
+  success.
+}
+
+
+
+
+Public CA signed certification:
+if it is public CA signed certification, similar with internal CA signed certification, will go through the CA chain to verify the signature to the root CA. if all pass, then accept the server certification. 
+
+![](https://github.com/litaocdl/docs/blob/master/pics/https.png)
+
+[reference: how https works](https://love2dev.com/blog/how-https-works/)
+
+**How to difference self-signed certification and CA signed using openssl**
+
+`openssl -in cert.pem -text -noout`
+
+self-signed, the issuer is same with the subject
+```
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            b0:e9:3e:cb:df:32:ba:7f
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=CN, ST=BJ, L=BJ, O=IBM, OU=IBM, CN=TAO/emailAddress=litaocdl@cn.ibm.com
+        Validity
+            Not Before: Jul  4 01:59:38 2019 GMT
+            Not After : Aug  3 01:59:38 2019 GMT
+        Subject: C=CN, ST=BJ, L=BJ, O=IBM, OU=IBM, CN=TAO/emailAddress=litaocdl@cn.ibm.com
+        Subject Public Key Info:
+
+```
+
+CA signed, the issuer points to a different certification, different with subject
+
+```
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            e1:15:46:0d:c5:eb:74:33
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=CN, ST=BJ, L=BJ, O=IBM, OU=IBM, CN=TAO/emailAddress=litaocdl@cn.ibm.com
+        Validity
+            Not Before: Jul  4 02:55:09 2019 GMT
+            Not After : Nov 19 02:55:09 2046 GMT
+        Subject: C=CN, ST=BJ, L=BJ, O=IBM, OU=IBM, CN=*.fyre.ibm.com
+        Subject Public Key Info:
+
+```
+
 ## How PKI works 
+
+If clients and Server are signed by the same CA, it is easy to understand certificate of A can verify the certificate of B. 
+
+![](https://github.com/litaocdl/docs/blob/master/pics/PKI1.png)
+
+If the client and server are signed by different CA, if two CA did not know each other, A can not verify B.
+
+![](https://github.com/litaocdl/docs/blob/master/pics/PKI2.png)
+
+
+So in the real word, different CA are all signed by its parent CA and back to the same root CA, and this chain is installed in the computer system to make sure the recerieved can verified each other.
+
+
+![](https://github.com/litaocdl/docs/blob/master/pics/PKI3.png)
 
 ## Certificate format
  
