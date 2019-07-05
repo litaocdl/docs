@@ -553,6 +553,111 @@ So in the real word, different CA are all signed by its parent CA and back to th
 
 ![](https://github.com/litaocdl/docs/blob/master/pics/PKI3.png)
 
-## Certificate format
+## Certificate format and convert 
  
+ There are various x509 certification file format, like `PEM`, `DER`, `PKCS12`, `PKCS7`.  
+ 
+ `PEM` and `PKCS7` are use BASE64 ASCII encoding.
+ `DER` and `PKCS12` are binary files. 
+ 
+ Different format has differnet recommended extension names, see picture below
+ 
+ ![](https://github.com/litaocdl/docs/blob/master/pics/x509.png)
+ 
+ 
+ **PEM format**
+ 
+ Most CA provides this format, extensions could be `.pem,.crt,.key or .cer`. the PEM format can include the certification file, intermediate file and priviate key in one single file, or have different file for each. we can use `cat` command to combine those files. certification are separate by standard separations 
+ 
+ Certification
+ 
+ ```
+ ---- BEGIN CERTIFICATE---- 
+ ----END CERTIFICATE---- 
+ ```
+ 
+ Private key 
+ 
+ ```
+ ---- BEGIN RSA PRIVATE KEY-----
+ -----END RSA PRIVATE KEY----- 
+ ```
+ 
+ CSR
+ 
+ ```
+ -----BEGIN CERTIFICATE REQUEST----- 
+ -----END CERTIFICATE REQUEST----- 
+ ```
+ 
+ Convert pem to der
+ 
+ ```
+ openssl x509 -outform der -in ca.pem -out ca.der
+ ```
+ Convert pem to pkcs7
+ 
+ ```
+ openssl crl2pkcs7 -nocrl -certfile ca.pem -out ca.p7b -certfile CACert.cer
+ ```
+ 
+ convert pem to pkcs12, we can put the private key, rootCA and ca certification file together into pkcs12
+ 
+ ```
+ openssl pkcs12 -export -chain -in myca_crt.pem -inkey myca_priv.key -out myca.p12 -CAfile ./rootca.crt 
 
+ ```
+ 
+ **PKCS7 format**
+ 
+ PKCS7 is also in base64 ASCII encoding format. difference is, only certification and chain could be put in PKCS7 format, private key can not. windows and tomcat use this format. 
+ 
+ ```
+ -----BEGIN PKCS7-----
+ -----END PKCS7-----
+ ```
+ convert pkcs7 to pem
+ 
+ ```
+ openssl pkcs7 -print_certs -in ca.p7b -out ca.pem
+ ```
+ 
+ **DER format**
+ 
+ DER format are in binary format of certification, which is mostly used in java based application. 
+ 
+ Convert der to pem
+ 
+ ```
+ openssl x509 -inform der -in ca.der -out ca.pem
+ ```
+ **PKCS12 format**
+ 
+ PKCS12 format is in binary format, which can store the certification, intermediate and private key in a single p12 or pfx file with password protection. 
+ 
+ Convert PKCS12 to pem, as PKCS12 contains multiple files, we have multiple options to print out
+ 
+ Extract the client ca only.
+
+ `-nokey`: not create private key in pem
+ `-clcerts`: create client certificate in pem
+ ```
+ openssl pkcs12 -in ca.p12 -out test1.pem -clcerts -nokeys
+ ```
+ 
+ extract the root ca certificate 
+ 
+ ```
+ openssl pkcs12 -in ca.p12 -out rootca.pem -cacerts -nokeys
+ ```
+ extract the private key only
+ `-nodes`: not encrypt the private key. 
+ ```
+ openssl pkcs12 -in ca.p12 -out key.pem  -nocerts -nodes
+ ```
+
+ **JKS format**
+ 
+[Reference: different certification file](https://www.tutorialsteacher.com/https/ssl-certificate-format)
+[Reference: convert](https://knowledge.digicert.com/solution/SO26449.html)
+[Reference: openssl pkcs12](https://linux.die.net/man/1/pkcs12)
