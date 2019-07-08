@@ -669,7 +669,9 @@ So in the real word, different CA are all signed by its parent CA and back to th
  Extract the client ca only.
 
  `-nokey`: not create private key in pem
+ 
  `-clcerts`: create client certificate in pem
+ 
  ```
  openssl pkcs12 -in ca.p12 -out test1.pem -clcerts -nokeys
  ```
@@ -680,7 +682,9 @@ So in the real word, different CA are all signed by its parent CA and back to th
  openssl pkcs12 -in ca.p12 -out rootca.pem -cacerts -nokeys
  ```
  extract the private key only
+ 
  `-nodes`: not encrypt the private key. 
+ 
  ```
  openssl pkcs12 -in ca.p12 -out key.pem  -nocerts -nodes
  ```
@@ -732,3 +736,24 @@ keytool  -delete -noprompt -alias ${cert.alias}  -keystore ${keystore.file}
 
 [Reference: keytool](https://docs.oracle.com/cd/E19830-01/819-4712/ablqw/index.html)
 
+
+---
+### How SSH works
+---
+
+SSH keys are not like openssl generated keys. ssh private key usually not encrypted, it depends on the filesystem permission to ensure the security. ssh usually does not relay on certifications include public key, certifications are locates in different filesystem. 
+
+generate ssh key pairs:
+
+two file will generated, rsakey and rsakey.pub, while the second is the public key.
+
+
+```
+ssh-keygen -t rsa/dsa/ecdsa/eddsa -f rsakey
+```
+
+we can always use the `-y` option to see the public key for a given private key.
+
+```
+ssh-keygenb -y -f rsakey
+```
