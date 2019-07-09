@@ -41,3 +41,6 @@ curl -B "ldap://ip/dc=xxx,dc=com?*?sub?uid=xxx" -u "cn=xxx,dc=xxx,dc=com:xxx"
 
 ```
 
+### Reference
+
+All about CURL: https://ec.haxx.se/cmdline-options.html
