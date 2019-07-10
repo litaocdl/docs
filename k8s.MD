@@ -5,6 +5,7 @@
   
   [install weave network](https://www.weave.works/docs/net/latest/kubernetes/kube-addon/)
 
+  when the machine restart, need swapoff -a to disable swap, then api and controller will auto start. 
 
 ## Configure kubeconfig for kubectl 
   1. login to master node and extra the kube config 
