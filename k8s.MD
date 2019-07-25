@@ -26,6 +26,7 @@ apiserver need enable `-enable-bootstrap-token-auth=true`
 curl -H "Authorization: Bearer qpafj9.i2g5lucthim4wkgc" https://9.30.146.114:6443/version -k
 ```
 
+[bootstrap token reference](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-token/)
 
 ## logs
 
