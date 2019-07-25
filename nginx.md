@@ -1,10 +1,10 @@
 
 
-### Why nginx if is evi
+### 1. Why nginx if is evi
 https://www.nginx.com/resources/wiki/start/topics/depth/ifisevil/
 
 
-### Configure nginx to create request_id if not exists in request header
+### 2. Configure nginx to create request_id if not exists in request header
 
 if x-request-id exists in request header, it will set req_id to $x-request-id
 if not exists, will use nginx variable $request_id to generate a new one. 
