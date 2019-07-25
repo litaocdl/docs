@@ -21,3 +21,5 @@ all dash to underline and convert all capital to lower case. like `x-request-id`
     proxy_set_header X-Request-ID $req_id;
     
 ```
+
+[reference unique id for nginx](https://www.jianshu.com/p/5e103e1eb017)
