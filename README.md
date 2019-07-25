@@ -1,3 +1,3 @@
 # docs
 
-Documents summary from daily learning
+### Summary from daily learning for interested topic
