@@ -18,8 +18,8 @@ cat cluster-cert.txt
 
 Auto generate password using helm function 
 `derivePassword` function reference
-[](https://banzaicloud.com/blog/creating-helm-charts/)
-[](http://masterminds.github.io/sprig/crypto.html)
+[create helm chart](https://banzaicloud.com/blog/creating-helm-charts/)
+[crypto](http://masterminds.github.io/sprig/crypto.html)
 
 ```
 {{ .Values.secret.abc.password | default (derivePassword 1 "long" uuidv4 .Release.Name .Chart.Name) | b64enc }}
