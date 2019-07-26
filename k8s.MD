@@ -29,6 +29,12 @@ or use uuidv4 directly
 {{ .Values.secret.abc.password | default uuidv4 | b64enc }}
 ```
 
+auto generate secrets values
+
+```
+kubectl create secret generic <name> --from-literal=consoleApiKey=$(head -c 512 /dev/urandom | LC_CTYPE=C tr -cd 'a-zA-Z0-9' | head -c 32) --namespace <your namespace>
+```
+
 ## Kubectl auth
 
 ### use bootstrap token auth
