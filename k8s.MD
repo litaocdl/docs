@@ -14,6 +14,20 @@ cat cluster-cert.txt
   2. copy the kube configure to local
    kubectl --kubeconfig=./kubeconfig get nodes.
 
+## Secrets
+
+Auto generate password using helm function 
+`derivePassword` function reference
+[](https://banzaicloud.com/blog/creating-helm-charts/)
+[](http://masterminds.github.io/sprig/crypto.html)
+
+```
+{{ .Values.secret.abc.password | default (derivePassword 1 "long" uuidv4 .Release.Name .Chart.Name) | b64enc }}
+```
+or use uuidv4 directly 
+```
+{{ .Values.secret.abc.password | default uuidv4 | b64enc }}
+```
 
 ## Kubectl auth
 
