@@ -149,7 +149,7 @@ kubectl create serviceaccount api-service-account
 2. grant privilege for this service account 
 
 ```
-kubectl create -f 
+kubectl create -f https://raw.githubusercontent.com/litaocdl/docs/master/sample/authorization.yaml
 ```
 
 3. Get token from the services account 
