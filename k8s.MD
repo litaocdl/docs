@@ -137,3 +137,34 @@ openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key \
 -CAcreateserial -out server.crt -days 10000 \
 -extensions v3_ext -extfile csr.conf
 ```
+
+## Use services account to access k8s
+
+1. create a service account
+
+```
+kubectl create serviceaccount api-service-account
+```
+
+2. grant privilege for this service account 
+
+```
+kubectl create -f 
+```
+
+3. Get token from the services account 
+
+```
+kubectl get secrets $(kubectl get serviceaccount api-service-account  -o json | jq -Mr '.secrets[].name') -o json | jq -Mr '.data.token' | base64 -D
+```
+4. get k8s endpoints 
+
+```
+kubectl get endpoints | grep kubernetes
+```
+
+5. this token could be used to access k8s api
+
+```
+curl -k  https://<ip>/api/v1/namespaces -H "Authorization: Bearer $token"
+```
