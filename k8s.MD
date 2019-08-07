@@ -168,3 +168,33 @@ kubectl get endpoints | grep kubernetes
 ```
 curl -k  https://<ip>/api/v1/namespaces -H "Authorization: Bearer $token"
 ```
+
+## ClusterIP vs NodePort vs LoadBalancer vs Ingress
+
+A services yaml
+
+```
+apiVersion: v1
+kind: Service
+Spec:
+ ports:
+   - name:
+     port:        # the port on clusterIP
+     targetPort:  # the target pod ports to map, the routing will finally reach this port inner the pod.
+     nodePort:    # the port on node ip, if services type is NodePort, use this value to access the services from outside
+ type: NodePort/ClusterIP/LoadBalancer
+```
+
+`ClusterIP` and `NodePort` `LoadBalancer` are all services type. Ingress is not a type of service
+
+`ClusterIP` means the services is exposed to cluster internal ip. To reach the ClusterIp from an external source, you can open a Kubernetes proxy between the external source and the cluster. This is usually only used for development.
+
+`NodePort` means services exposed to each node level which can be access from external using <nodeIP>:<nodePort>
+  
+`LoadBalancer` means services exposed to public cloud load balance in external. using a cloud provider’s load balancer solution. and load balance will map to automatically created nodePort.
+
+For both <clusterip>:<port> or <nodeip>:<nodeport> access, the kube-proxy will create a access rule in iptables to reroute the access. 
+  
+`Ingress` Ingress acts like reverse proxy, which exposed it self as nodeport, clusterip or loadbalancer, and redirect the rule based on the configuration rules to clusterips. 
+
+Reference [clusterip vs nodeport and ingress](https://www.ovh.com/blog/getting-external-traffic-into-kubernetes-clusterip-nodeport-loadbalancer-and-ingress/)
