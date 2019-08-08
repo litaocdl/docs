@@ -1,0 +1,14 @@
+apiVerison: v1
+kind: Pod
+metadata:
+  name: busybox_nslookup
+  namespace: default
+spec:
+ containers:
+ - name: busybox
+   image: gcr.io/google_containers/busybox
+   command:
+    - sleep
+    - "3600"
+    
+## kubectl exec busybox_nslookup -- nslookup <svc name>.<ns>
