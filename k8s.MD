@@ -198,3 +198,25 @@ For both <clusterip>:<port> or <nodeip>:<nodeport> access, the kube-proxy will c
 `Ingress` Ingress acts like reverse proxy, which exposed it self as nodeport, clusterip or loadbalancer, and redirect the rule based on the configuration rules to clusterips. 
 
 Reference [clusterip vs nodeport and ingress](https://www.ovh.com/blog/getting-external-traffic-into-kubernetes-clusterip-nodeport-loadbalancer-and-ingress/)
+
+## Expose pod services to external from pod level
+
+pod definitation as below, using `hostNetwork` or `hostPort`
+
+```
+spec:
+ hostNetwork: true
+ containers: 
+ - name: sample
+   ports:
+    - containerPort: 8080
+      hostPort: 18080
+
+```
+
+Use `hostNetwork`, the all the port in the pod will map to the node network. if `hostPort` is specific, must equals to `containerPort`
+
+User `hostPort`, without setting the `hostNetwork=true`, we can set the ports level `hostPort`, to map one port to the node network.
+
+Using <nodeip>:<hostPort> to access the pod services. make sure check which node the pod is running and using that specific node ip address. 
+  
