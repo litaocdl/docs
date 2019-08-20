@@ -6,34 +6,35 @@ Groups the function interface by the datatype it supports. function interfaces a
 ### 0 params functioninterface
 
 `Supplier<T>`
-  --> `Supplier` --> T
+`()--> Supplier --> T`
   
 `BooleanSupplier`
-  --> `BooleanSupplier` --> boolean
+`()--> BooleanSupplier --> boolean`
   
 ### 1 params functionInterface
 
 `Function<T,R>`: for all other kinds of XFunction, which is change the input params to X, like `DoubleFunction<R>` 
 is accept `double` input params. 
-T --> `Function` --> R
+
+`T --> Function --> R`
 
 `UnaryOperator<T>`: input and return type are same, extends from Function
-T --> `UnaryOperator<T>` --> T
+`T --> UnaryOperator<T> --> T`
 
 `Predicate<T>`
-T --> `Predicate<T>` --> boolean
+`T --> Predicate<T> --> boolean`
 
 `Consumer<T>: an expected side effect function, which has no return.
-T --> `Consumer`  --> void 
+`T --> Consumer  --> void` 
 
   
 ### 2 params functionInterface
 
 `BiFunction<T,U,R>`
-T,U --> `BiFunction` --> R
+`T,U --> BiFunction --> R`
 
 `BinaryOperator<T>`: input and return type are same. extends from BiFunction
-T,T --> `BinaryOperator` --> T
+`T,T --> BinaryOperator --> T`
 
 `BiPredicate<T,U>`
-T,U --> `BiPredicate` --> boolean
+`T,U --> BiPredicate --> boolean`
