@@ -46,3 +46,13 @@ is accept `double` input params.
 * `BiPredicate<T,U>`
 
   `T,U --> BiPredicate --> boolean`
+
+### Naming standards for functions interface.
+
+* if function  return a basic type, it starts with `To`
+
+  T -> ToLongFunction -> long
+  
+* if function accept a basic type, it just starts with basic type, like
+  
+  long -> LongFunction -> T
