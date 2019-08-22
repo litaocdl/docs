@@ -56,3 +56,27 @@ is accept `double` input params.
 * if function accept a basic type, it just starts with basic type, like
   
   long -> LongFunction -> T
+
+### Stream difference 
+
+Copy of stream created for stream operation in `java.util.stream` package
+
+`Stream`, `DoubleStream`,`IntStream`,`LongStream`
+
+`Stream`
+Stream.of(T)
+Stream.iterate(T, seeds, UnaryOperator<T>)
+`DoubleStream`
+
+DoubleStream.of(double ...)
+DoubleStream.iterate(double seed,DoubleUnaryOperator f)
+
+`IntStream`
+IntStream.of(int ...)
+IntStream.generate(int seed, IntUnaryOperator f)
+IntStream.range(int start, int end)
+
+`LongStream`
+
+each stream has factory method to create a stream
+
