@@ -80,3 +80,14 @@ IntStream.range(int start, int end)
 
 each stream has factory method to create a stream
 
+
+### default method in interface
+
+`default` method is introduced in java8 is used to make sure `binary compatibility`. Code write use java1-java7 can be compiled against java8. as java8 introduced `stream` method in `Collection` interface. all code implements `Collection` 
+need rewrite in java8, so java8 add `default stream` method in `Collection`
+
+`default` method is added in interface level ,provide a default impl for a abstract method. 
+
+  1. if one class impls a interface which has default method, this interface is extends from another interface which also has same default method. the class will choose the `default` method in most closed interface. 
+  
+  2. if one class extends an abstract class and also impls a interface. the default method in the abstract class will be chose.  
