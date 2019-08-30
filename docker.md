@@ -30,6 +30,9 @@ https://docs.docker.com/docker-for-mac/docker-toolbox/
 ### Network module 
 
 
+    ![](https://github.com/litaocdl/docs/blob/master/pics/docker_network_driver.png)
+     
+
 * Bridge
   1. Use docker0 bridge (created by docker daemon), in each container, create a veth (eth0 - veth) from container to docker0 bridge. 
      when docker visit the outside network, will use NAT to change the source or target ip address. when access outside, use SNAT (Source NAT), when outside visit docker, use DNAT (Dest NAT).  by default, outside can visit the docker network, it is controlled by ip forward. set `net.ipv4.ip_forward=1`
