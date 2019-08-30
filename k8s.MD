@@ -14,6 +14,32 @@ cat cluster-cert.txt
   2. copy the kube configure to local
    kubectl --kubeconfig=./kubeconfig get nodes.
 
+
+## Kubernetes overview 
+
+### Structure 
+
+  ![](https://github.com/litaocdl/docs/blob/master/pics/k8s_stuct.png)
+  
+  Master Node:
+  
+  * API Server: statefulless, heart 
+  * Controller Manager: statefulless, manage pod replication.
+  * Scheduler: statefulless, pod scheudler 
+  * ETCD
+
+  Worker:
+  
+  * kubelet
+  * kube-proxy 
+  * Container Runtime: docker, etc
+  
+  Addons
+  
+  * DNS: domain to clusterip etc change
+  * Web UI (Dashboard):
+  
+
 ## Secrets
 
 Auto generate password using helm function 
@@ -220,3 +246,5 @@ User `hostPort`, without setting the `hostNetwork=true`, we can set the ports le
 
 Using `<nodeip>:<hostPort>` to access the pod services. make sure check which node the pod is running and using that specific node ip address. 
   
+
+
