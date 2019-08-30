@@ -14,6 +14,7 @@ cat cluster-cert.txt
   2. copy the kube configure to local
    kubectl --kubeconfig=./kubeconfig get nodes.
 
+---
 
 ## Kubernetes overview 
 
@@ -39,8 +40,15 @@ cat cluster-cert.txt
   * DNS: domain to clusterip etc change
   * Web UI (Dashboard):
   
+  
+### How k8s create a pod 
 
-## Secrets
+  ![](https://github.com/litaocdl/docs/blob/master/pics/k8s_create_pod.png)
+
+---
+
+## K8s Objects 
+### Secrets
 
 Auto generate password using helm function 
 `derivePassword` function reference
@@ -61,7 +69,62 @@ auto generate secrets values
 kubectl create secret generic <name> --from-literal=consoleApiKey=$(head -c 512 /dev/urandom | LC_CTYPE=C tr -cd 'a-zA-Z0-9' | head -c 32) --namespace <your namespace>
 ```
 
-## Kubectl auth
+
+
+
+### K8s Services ClusterIP vs NodePort vs LoadBalancer vs Ingress
+
+A services yaml
+
+```
+apiVersion: v1
+kind: Service
+Spec:
+ ports:
+   - name:
+     port:        # the port on clusterIP
+     targetPort:  # the target pod ports to map, the routing will finally reach this port inner the pod.
+     nodePort:    # the port on node ip, if services type is NodePort, use this value to access the services from outside
+ type: NodePort/ClusterIP/LoadBalancer
+```
+
+`ClusterIP` and `NodePort` `LoadBalancer` are all services type. Ingress is not a type of service
+
+`ClusterIP` means the services is exposed to cluster internal ip. To reach the ClusterIp from an external source, you can open a Kubernetes proxy between the external source and the cluster. This is usually only used for development.
+
+`NodePort` means services exposed to each node level which can be access from external using `<nodeIP>:<nodePort>`
+  
+`LoadBalancer` means services exposed to public cloud load balance in external. using a cloud provider’s load balancer solution. and load balance will map to automatically created nodePort.
+
+For both `<clusterip>:<port>` or `<nodeip>:<nodeport>` access, the kube-proxy will create a access rule in iptables to reroute the access. 
+  
+`Ingress` Ingress acts like reverse proxy, which exposed it self as nodeport, clusterip or loadbalancer, and redirect the rule based on the configuration rules to clusterips. 
+
+Reference [clusterip vs nodeport and ingress](https://www.ovh.com/blog/getting-external-traffic-into-kubernetes-clusterip-nodeport-loadbalancer-and-ingress/)
+
+### Expose pod services to external from pod level
+
+pod definitation as below, using `hostNetwork` or `hostPort`
+
+```
+spec:
+ hostNetwork: true
+ containers: 
+ - name: sample
+   ports:
+    - containerPort: 8080
+      hostPort: 18080
+
+```
+
+Use `hostNetwork`, the all the port in the pod will map to the node network. if `hostPort` is specific, must equals to `containerPort`
+
+User `hostPort`, without setting the `hostNetwork=true`, we can set the ports level `hostPort`, to map one port to the node network.
+
+Using `<nodeip>:<hostPort>` to access the pod services. make sure check which node the pod is running and using that specific node ip address. 
+  
+---
+## K8s tips
 
 ### use bootstrap token auth
 
@@ -74,13 +137,13 @@ curl -H "Authorization: Bearer qpafj9.i2g5lucthim4wkgc" https://9.30.146.114:644
 
 [bootstrap token reference](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-token/)
 
-## logs
+### logs
 
 check kubelet log
 `journalctl -u kubelet`
 
 
-## restart
+### restart
 
 both master and work nodes
 ```
@@ -90,8 +153,8 @@ systemctl start kubelet
 ```
 
 
-## Generate x509 certificate for k8s 
-## Use openssl to generate self certification for x509 client authentication. 
+### Generate x509 certificate for k8s 
+Use openssl to generate self certification for x509 client authentication. 
 1. Generate private key for CA, ca.key
 
 ```
@@ -164,7 +227,7 @@ openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key \
 -extensions v3_ext -extfile csr.conf
 ```
 
-## Use services account to access k8s
+### Use services account to access k8s
 
 1. create a service account
 
@@ -194,57 +257,3 @@ kubectl get endpoints | grep kubernetes
 ```
 curl -k  https://<ip>/api/v1/namespaces -H "Authorization: Bearer $token"
 ```
-
-## ClusterIP vs NodePort vs LoadBalancer vs Ingress
-
-A services yaml
-
-```
-apiVersion: v1
-kind: Service
-Spec:
- ports:
-   - name:
-     port:        # the port on clusterIP
-     targetPort:  # the target pod ports to map, the routing will finally reach this port inner the pod.
-     nodePort:    # the port on node ip, if services type is NodePort, use this value to access the services from outside
- type: NodePort/ClusterIP/LoadBalancer
-```
-
-`ClusterIP` and `NodePort` `LoadBalancer` are all services type. Ingress is not a type of service
-
-`ClusterIP` means the services is exposed to cluster internal ip. To reach the ClusterIp from an external source, you can open a Kubernetes proxy between the external source and the cluster. This is usually only used for development.
-
-`NodePort` means services exposed to each node level which can be access from external using `<nodeIP>:<nodePort>`
-  
-`LoadBalancer` means services exposed to public cloud load balance in external. using a cloud provider’s load balancer solution. and load balance will map to automatically created nodePort.
-
-For both `<clusterip>:<port>` or `<nodeip>:<nodeport>` access, the kube-proxy will create a access rule in iptables to reroute the access. 
-  
-`Ingress` Ingress acts like reverse proxy, which exposed it self as nodeport, clusterip or loadbalancer, and redirect the rule based on the configuration rules to clusterips. 
-
-Reference [clusterip vs nodeport and ingress](https://www.ovh.com/blog/getting-external-traffic-into-kubernetes-clusterip-nodeport-loadbalancer-and-ingress/)
-
-## Expose pod services to external from pod level
-
-pod definitation as below, using `hostNetwork` or `hostPort`
-
-```
-spec:
- hostNetwork: true
- containers: 
- - name: sample
-   ports:
-    - containerPort: 8080
-      hostPort: 18080
-
-```
-
-Use `hostNetwork`, the all the port in the pod will map to the node network. if `hostPort` is specific, must equals to `containerPort`
-
-User `hostPort`, without setting the `hostNetwork=true`, we can set the ports level `hostPort`, to map one port to the node network.
-
-Using `<nodeip>:<hostPort>` to access the pod services. make sure check which node the pod is running and using that specific node ip address. 
-  
-
-
