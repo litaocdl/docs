@@ -9,11 +9,31 @@ https://docs.docker.com/docker-for-mac/docker-toolbox/
 
 ### Docker storage module
 
+   To support varias linux file system, like ext4,xfs. docker need to use network driver. there are many network driver docker 
+   support, like aufs, device mapper and overlay2. 
+   
+   Docker supports the following storage module
+   1. Using host machine volumn 
+      like a random host machine volumn is mount to docker `/tmp/myfolder`
+      
+     `docker run -itd -v /tmp/myfolder -name data-volumn busybox sleep 1000`
+    
+    2. Using a fix folder in host
+     
+       `docker run -itd -v /home/litaocdl:/tmp/myfolder ... `
+       
+    3. Use a volumn container
+    
+       `docker run -d --volumns-from data-volumn --name busy-box2 sleep 1000`
+       
+    
 ### Network module 
 
 
 * Bridge
   1. Use docker0 bridge (created by docker daemon), in each container, create a veth (eth0 - veth) from container to docker0 bridge. 
+     when docker visit the outside network, will use NAT to change the source or target ip address. when access outside, use SNAT (Source NAT), when outside visit docker, use DNAT (Dest NAT).  by default, outside can visit the docker network, it is controlled by ip forward. set `net.ipv4.ip_forward=1`
+      `sysctl -w net.ipv4.ip_forward=1`
   
 * Host
   1. Share ip address with host, share port with host, no port mapping. 
