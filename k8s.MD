@@ -189,11 +189,11 @@ Spec:
 
 `ClusterIP` means the services is exposed to cluster internal ip. To reach the ClusterIp from an external source, you can open a Kubernetes proxy between the external source and the cluster. This is usually only used for development.
 
-`NodePort` means services exposed to each node level which can be access from external using <nodeIP>:<nodePort>
+`NodePort` means services exposed to each node level which can be access from external using `<nodeIP>:<nodePort>`
   
 `LoadBalancer` means services exposed to public cloud load balance in external. using a cloud provider’s load balancer solution. and load balance will map to automatically created nodePort.
 
-For both <clusterip>:<port> or <nodeip>:<nodeport> access, the kube-proxy will create a access rule in iptables to reroute the access. 
+For both `<clusterip>:<port>` or `<nodeip>:<nodeport>` access, the kube-proxy will create a access rule in iptables to reroute the access. 
   
 `Ingress` Ingress acts like reverse proxy, which exposed it self as nodeport, clusterip or loadbalancer, and redirect the rule based on the configuration rules to clusterips. 
 
@@ -218,5 +218,5 @@ Use `hostNetwork`, the all the port in the pod will map to the node network. if 
 
 User `hostPort`, without setting the `hostNetwork=true`, we can set the ports level `hostPort`, to map one port to the node network.
 
-Using <nodeip>:<hostPort> to access the pod services. make sure check which node the pod is running and using that specific node ip address. 
+Using `<nodeip>:<hostPort>` to access the pod services. make sure check which node the pod is running and using that specific node ip address. 
   
