@@ -48,6 +48,7 @@ cat cluster-cert.txt
 ---
 
 ## K8s Objects 
+
 ### Secrets
 
 Auto generate password using helm function 
@@ -70,9 +71,7 @@ kubectl create secret generic <name> --from-literal=consoleApiKey=$(head -c 512 
 ```
 
 
-
-
-### K8s Services ClusterIP vs NodePort vs LoadBalancer vs Ingress
+### Services - ClusterIP vs NodePort vs LoadBalancer vs Ingress
 
 A services yaml
 
@@ -102,7 +101,18 @@ For both `<clusterip>:<port>` or `<nodeip>:<nodeport>` access, the kube-proxy wi
 
 Reference [clusterip vs nodeport and ingress](https://www.ovh.com/blog/getting-external-traffic-into-kubernetes-clusterip-nodeport-loadbalancer-and-ingress/)
 
-### Expose pod services to external from pod level
+### POD
+
+* static pod: controlled by kubelet, not apiserver. Running in a node for long time, type: `DaemonSet`. kubelet scan the `--pod-manifest-path` and create the static pods. 
+
+* Pod life cycle 
+
+Pending --> Running (at least one container is in running status) --> Succeed (all container stopped and not restart)
+                    --> Failed (at least one container failed)
+                    --> Unknown
+
+
+#### Expose pod services to external from pod level
 
 pod definitation as below, using `hostNetwork` or `hostPort`
 
@@ -117,12 +127,35 @@ spec:
 
 ```
 
-Use `hostNetwork`, the all the port in the pod will map to the node network. if `hostPort` is specific, must equals to `containerPort`
+With `hostNetwork=true`, the all the port in the pod will map to the node network. if `hostPort` is specific, must equals to `containerPort`
 
-User `hostPort`, without setting the `hostNetwork=true`, we can set the ports level `hostPort`, to map one port to the node network.
+Without setting the `hostNetwork=true`, we can set the ports level `containerPort` and `hostPort`, to map one port to the node network.
 
 Using `<nodeip>:<hostPort>` to access the pod services. make sure check which node the pod is running and using that specific node ip address. 
+
+
+#### Prob in pod.
   
+  if `readness` failed, server offline. if `liveness` failed, restart container. 
+
+  * Liveness: container level health check. Based on restartPolicy (Always `default` (container exit),OnFailure (container exit not 0),Never) to restart container. when container in exit status, kubelet will restart the container in a delay way, 10s, 20s, 40s ... 300s ? when container in running status
+  longer than 10 minutes, reset the delay value. 
+  * Readness: service level health check. remove the service from load balance. 
+
+  three type:
+  
+  `ExecAction` (check if shell return 0), `TCPSocketAction` (check if port is open), `HTTPGetAction` (check response code between [200,400))
+  
+
+
+  Best Practice: liveness and readness use same way, and readness set longer internal than liveness. 
+
+#### Deploy Pod
+
+   * Using Job. for the pod expected to stop.
+   * Using `Deployment`, ReplicaSet, ReplicationController. for the pod not expected stop.
+   * Using DaemonSet
+
 ---
 ## K8s tips
 
