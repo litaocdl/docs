@@ -34,10 +34,22 @@ https://docs.docker.com/docker-for-mac/docker-toolbox/
   1. Use docker0 bridge (created by docker daemon), in each container, create a veth (eth0 - veth) from container to docker0 bridge. 
      when docker visit the outside network, will use NAT to change the source or target ip address. when access outside, use SNAT (Source NAT), when outside visit docker, use DNAT (Dest NAT).  by default, outside can visit the docker network, it is controlled by ip forward. set `net.ipv4.ip_forward=1`
       `sysctl -w net.ipv4.ip_forward=1`
+      
+      ![](https://github.com/litaocdl/docs/blob/master/pics/docker_net_bridge1.png)
+      
+      NAT to change the target ip address 
+      
+      ![](https://github.com/litaocdl/docs/blob/master/pics/iptables_dnat.png)
+      
+      NAT to change the source ip address
+      
+      ![](https://github.com/litaocdl/docs/blob/master/pics/iptables_snat.png)
   
 * Host
   1. Share ip address with host, share port with host, no port mapping. 
 
+      ![](https://github.com/litaocdl/docs/blob/master/pics/docker_net_host.png)
+      
 * None
   1. No network, Can only use loopback network. handle batch work.
   
@@ -45,6 +57,8 @@ https://docs.docker.com/docker-for-mac/docker-toolbox/
   1. Share network module with another existed container. in k8s, inner one pod, the `pause` container will start first
   ,all the other containers in one pad use `--net=Container:pause` with this pause container. 
   
+    ![](https://github.com/litaocdl/docs/blob/master/pics/docker_net_container.png)
+    
 * Overlay
   latest network module docker created to support NFS. besides the overlay docker created, there are others like flannel, weave and calico etc. 
   Docker is using CNM (container network module) to use those network modules 
