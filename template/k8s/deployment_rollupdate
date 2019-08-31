@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-nginx
+spec:
+  strategy:
+    rollingUpdate:
+    #max number exceed replicas
+      maxSurge: 1
+    #max number of unavailable pod
+      maxUnavailable: 5
+  selector:
+    matchLabels:
+      run: my-nginx
+  replicas: 10
+  minReadySeconds: 60
+  template:
+    metadata:
+      labels:
+        run: my-nginx
+    spec:
+      containers:
+      - name: my-nginx
+        image: nginx
+        ports:
+        - containerPort: 80
