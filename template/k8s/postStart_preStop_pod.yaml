@@ -6,7 +6,6 @@ spec:
   containers:
   - name: lifecycle-demo-container
     image: nginx
-    terminationGracePeriodSeconds: 60
     lifecycle:
       postStart:
         exec:
@@ -15,3 +14,4 @@ spec:
       preStop:
         exec:
           command: [“/usr/sbin/nginx","-s","quit"]
+  terminationGracePeriodSeconds: 60
