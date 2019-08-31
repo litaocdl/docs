@@ -5,7 +5,9 @@ metadata:
 spec:
   strategy:
     rollingUpdate:
-    #max number exceed replicas
+    #maxSurge=0 maxUnavailable>0, first offline then online
+    #maxSurge>0 maxUnavailable=0, first online then offline
+    #max number exceed replicas, means the max online replicas are maxSurge+replicas, or can use 20%
       maxSurge: 1
     #max number of unavailable pod
       maxUnavailable: 5
@@ -13,6 +15,7 @@ spec:
     matchLabels:
       run: my-nginx
   replicas: 10
+  # 
   minReadySeconds: 60
   template:
     metadata:
