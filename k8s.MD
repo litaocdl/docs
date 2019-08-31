@@ -49,6 +49,8 @@ cat cluster-cert.txt
 
 ## K8s Objects 
 
+Check the object spec `kubectl explain pod.spec`
+
 ### Secrets
 
 Auto generate password using helm function 
@@ -71,39 +73,11 @@ kubectl create secret generic <name> --from-literal=consoleApiKey=$(head -c 512 
 ```
 
 
-### Services - ClusterIP vs NodePort vs LoadBalancer vs Ingress
-
-A services yaml
-
-```
-apiVersion: v1
-kind: Service
-Spec:
- ports:
-   - name:
-     port:        # the port on clusterIP
-     targetPort:  # the target pod ports to map, the routing will finally reach this port inner the pod.
-     nodePort:    # the port on node ip, if services type is NodePort, use this value to access the services from outside
- type: NodePort/ClusterIP/LoadBalancer
-```
-
-`ClusterIP` and `NodePort` `LoadBalancer` are all services type. Ingress is not a type of service
-
-`ClusterIP` means the services is exposed to cluster internal ip. To reach the ClusterIp from an external source, you can open a Kubernetes proxy between the external source and the cluster. This is usually only used for development.
-
-`NodePort` means services exposed to each node level which can be access from external using `<nodeIP>:<nodePort>`
-  
-`LoadBalancer` means services exposed to public cloud load balance in external. using a cloud provider’s load balancer solution. and load balance will map to automatically created nodePort.
-
-For both `<clusterip>:<port>` or `<nodeip>:<nodeport>` access, the kube-proxy will create a access rule in iptables to reroute the access. 
-  
-`Ingress` Ingress acts like reverse proxy, which exposed it self as nodeport, clusterip or loadbalancer, and redirect the rule based on the configuration rules to clusterips. 
-
-Reference [clusterip vs nodeport and ingress](https://www.ovh.com/blog/getting-external-traffic-into-kubernetes-clusterip-nodeport-loadbalancer-and-ingress/)
 
 ### POD
 
-* static pod: controlled by kubelet, not apiserver. Running in a node for long time, type: `DaemonSet`. kubelet scan the `--pod-manifest-path` and create the static pods. 
+* static pod: controlled by kubelet, not apiserver. Running in a node for long time. kubelet scan the `--pod-manifest-path` and create the static pods. `type=pod`
+
 
 * Pod life cycle 
 
@@ -127,12 +101,17 @@ spec:
 
 ```
 
-With `hostNetwork=true`, the all the port in the pod will map to the node network. if `hostPort` is specific, must equals to `containerPort`
+With `hostNetwork=true`, the all the port in the pod will map to the node network. if `hostPort` is specific, must equals to `containerPort`.
+hostNetwork means docker is using `--net=host`. 
 
-Without setting the `hostNetwork=true`, we can set the ports level `containerPort` and `hostPort`, to map one port to the node network.
+With `hostNetwork=false` (default), we can set the ports level `containerPort` and `hostPort`, to map one port to the node network. `hostPort`
+is the actually port in host.  
 
 Using `<nodeip>:<hostPort>` to access the pod services. make sure check which node the pod is running and using that specific node ip address. 
 
+  * stop pod 
+   `--grace-period` the pod will be delete anyway in 60 seconds, default 30 seconds. 
+   kubectl delete deployment test --grace-period=60
 
 #### Prob in pod.
   
@@ -155,6 +134,271 @@ Using `<nodeip>:<hostPort>` to access the pod services. make sure check which no
    * Using Job. for the pod expected to stop.
    * Using `Deployment`, ReplicaSet, ReplicationController. for the pod not expected stop.
    * Using DaemonSet
+
+#### Init container
+
+   Handle the dependency of service/pod. if multi `initContainers` exists, will execute in sequence per defined in yaml. `initContainers` execute before services container starts. if the `initContainers` failed, the pods will failed. 
+
+
+#### Hooks provided for pod lifecycle
+
+  * postStart: execute after the pod starts. but we are not sure which one is first compared with `ENTRYPOINT`
+  * preStop:   execute before pod stop. but pod will still stop if the pod `terminationGracePeriodSeconds` is reach. 
+
+
+#### Label 
+
+  Label could be applied to any object in k8s, like deployment, pod, node, service etc. 
+   `kubectl get all --show-labels`
+   `kubectl get pod -l a=b`
+  * Label selector 
+  1. equal based.  `matchLabels`
+   
+  2. expression based. `matchExpressions`
+
+   ```
+     selector:
+       matchLabels:
+        - app: nginx
+        - name: tao
+       matchExpressions
+         {key: tier, operator: in,values: [cache]}
+   ```
+
+
+#### RC and RS and Deployment. 
+
+   RS support `expression based label selector` while RC does not. this is the only difference.
+   `Deployments` (k8s v1.2) wrap the RS, use deployment, we can see the pod deployment progress. and deployment support rollback,stop and resume.
+
+  pause deployment
+  `kubectl rollout pause`
+  resume deployment
+  `kubectl rollout resume`
+  check upgrade status
+  `kubectl rollout status`
+  check upgrade history, to see the history, need add `--record=true`
+  `kubectl rollout history <> --to-revision=2`
+  rollback
+  `kubectl rollout undo <> --to-revision=2`
+  scale up
+  `kubectl scale <> --replicas=10`
+  auto scale with hpa
+  `kubectl autoscale <> --min=10 --max=15 --cpu-percent=80`
+
+   Relationship: Deployment --> Replica Sets --> Pods
+   Naming: <deployment> --> <deployment>-<random number> --> <deployment>-<random number>-<random string>
+
+
+### Services - ClusterIP vs NodePort vs LoadBalancer vs Ingress
+
+  ![](https://github.com/litaocdl/docs/blob/master/pics/k8s_services.png)
+
+A services yaml
+
+```
+apiVersion: v1
+kind: Service
+Spec:
+ ports:
+   - name:
+     port:        # the port on clusterIP
+     targetPort:  # the target pod ports to map, the routing will finally reach this port inner the pod.
+     nodePort:    # the port on node ip, if services type is NodePort, use this value to access the services from outside
+ type: NodePort/ClusterIP/LoadBalancer
+```
+
+when a services is created, endpoints will be created for each pod and each port in the pod. 
+
+`ClusterIP` and `NodePort` `LoadBalancer` are all services type. Ingress is not a type of service
+
+`ClusterIP` means the services is exposed to cluster internal ip. To reach the ClusterIp from an external source, you can open a Kubernetes proxy between the external source and the cluster. This is usually only used for development. we can create dns mapping for services name and clusterip to solve the service discovery. 
+
+`NodePort` means services exposed to each node level which can be access from external using `<nodeIP>:<nodePort>`
+  
+`LoadBalancer` means services exposed to public cloud load balance in external. using a cloud provider’s load balancer solution. and load balance will map to automatically created nodePort.
+
+For both `<clusterip>:<port>` or `<nodeip>:<nodeport>` access, the kube-proxy will create a access rule in iptables to reroute the access. 
+  
+`Ingress` Ingress acts like reverse proxy, which exposed it self as nodeport, clusterip or loadbalancer, and redirect the rule based on the configuration rules to clusterips. 
+
+Reference [clusterip vs nodeport and ingress](https://www.ovh.com/blog/getting-external-traffic-into-kubernetes-clusterip-nodeport-loadbalancer-and-ingress/)
+  
+
+How services routed to pod, iptables vs ipvs
+
+![](https://github.com/litaocdl/docs/blob/master/pics/services-proxy-mode.png)
+
+
+Services Discovery
+
+* clusterip: use iptables route
+* NodePort: use iptables route
+* LoadBalancer: different cloud provider use different impl. will auto assign an external ip. tencent use iptables.
+* Ingress nginx/traefik, 7 layer
+* Istio: Ingress gateway, 7 layer
+* hostnetwork: `hostNetWork`docker use hostnetwork, use another services to register and manage the port. serivces is mapped to port. 
+
+
+ingress
+
+![](https://github.com/litaocdl/docs/blob/master/pics/ingress.png)
+
+### Job
+
+   type=Job, restartPolicy=Never
+
+### ConfigMap
+
+`kubectl create configmap <> --from-file=<>`
+
+ Reference config map in Pod. 
+ 1. Use as env , when configure map is recreate, the env will not update. 
+ 2. Use as volumn. when configure map is recreate, the volumn will update.
+
+Etcd has size limitation (1M) for the values under one entry. so the configure map has a size limitation. 
+
+### DaemonSet
+
+`DaemonSet`. similar with Deployment, for deploy a list of pod, but makesure there is one pod running in each node. and make sure the pod can not be delete. new node added to cluster will auto create the DaemonSet pod. 
+
+ Classic scenario: need a process run in every node for storage, log collecting, monitoring etc. different with static pod
+, DaemonSet is controlled by apiserver and kubectl.
+
+`kubectl delete daemonSet <> --cascade=false`  
+`--cascade=false` only delete daemonSet, not delete pod. default will delete all pod under this DaemonSet. 
+
+### StatefulSet
+
+   Can ensure the pod deploy in sequence and give each pod a unique pod name. 
+
+### Secret 
+
+### Service Account
+### Annotation
+
+   User defined message. 
+
+
+### Label
+  add label
+  `kubectl label node <> key=value`
+  remove label
+  `kubectl label node <> key-`
+---
+
+## K8s QoS
+
+Classification by priority 
+
+  * Guaranteed: ensure. first priority. limits=request or only has limits.  m=1/1000 cpu
+
+     ```
+       resources:
+         # limits is the resource limitation 
+         limits:
+           cpu: 10m
+           memory: 1Gi
+         # requests is how much we request. 
+          requests:
+           cpu: 10m
+           memory: 1Gi
+     ```
+  * Burstable: 
+    Set resource but not the above. 
+  * Best-Effort: share resource, try best. lowest priority. 
+    Not set resource
+
+  Kubelet resource recyle policy. if no available resource (memory,not cpu), will first kill Best_Effort, then Burstable then Guaranteed, to make sure kubelet can 
+  run successfully. 
+
+ Classification by resource type
+
+  CPU: if cpu usage in pod exceed the limits, cpu resource will reduced in pod.
+
+  Memory: if memory used in pod exceed the limits, pod will be killed. 
+
+---
+
+## k8s scheduler 
+
+   scheduler the pod running in a certain node. 
+   Two phase 
+   1. pre-select. Predicates 
+      filter out the un-satisfied node. 
+      request(pod) = Max(Max(request(initContainer1),...), SUM(request(container)))
+      success = request(pod) < node.allocatable - node.requested
+
+      ```
+      kubectl describe node
+
+      Capacity:
+       cpu:                2
+       ephemeral-storage:  244198912Ki
+       hugepages-1Gi:      0
+       hugepages-2Mi:      0
+       memory:             8009304Ki
+       pods:               110
+      Allocatable:
+       cpu:                2
+       ephemeral-storage:  225053716927
+       hugepages-1Gi:      0
+       hugepages-2Mi:      0
+       memory:             7906904Ki
+       pods:               110
+      ```
+
+   2. best-select. Priority 
+      find out the best node to schedule. 
+
+      a. `nodeSelector`  exactly match the node label
+
+        ```
+           nodeSelector:
+              diskType: ssd
+              key: value
+        ```
+
+      b. `nodeAffinity` upgrade version of nodeSelector. check the node and used for pod looking for node.
+          * Support in, NotIn. support enum of label, like zone in [label1,label2...]
+          * Support required(hard condition) and preferred(soft condition) condition 
+             `requiredDuringSchedulingIgnoreDuringException`: must match, but after pod deployed if condition change, pod will not removed from node.
+              multi condition is or.
+             `preferredDuringSchedulingIgnoreDuringException`: better to match, but after pod deployed if condition change, pod will not removed from node.
+      c. `podAffinity` `podAntiAffinity` checking the existed pod running in node used for pod looking for node.
+             `requiredDuringSchedulingIgnoreDuringException`: must match, but after pod deployed if condition change, pod will not removed from node.
+             multi condition is and.
+             `preferredDuringSchedulingIgnoreDuringException`: better to match, but after pod deployed if condition change, pod will not removed from node.
+            
+             `podAntiAffinity` use same process with `podAffinity`, just get `!{result}`
+
+            the scope of the topolog search
+             ` topologyKey:kubernetes.io/zone ` 
+             ` topologyKey:kubernetes.io/hostname ` 
+
+      d. `Taints` and `Tolerations`
+         Taints: Added on node. a special label with `effect`, avoid pod deploy to a special node. 
+         
+         ```
+            taints:
+             - effect: NoSchedule/PreferNoSchedule
+               key: key1
+               value: value1
+         ```
+         Tolerations: Added on pod. ignore a Taints
+         * exactly match: key=value:effect
+         * match any value: if value is null and operator is Exists
+         * match any effect: effect is null. 
+
+         ```
+            tolerations:
+            - key: key1
+              operator: Equal
+              value: value1
+              effect: NoSchedule
+         ```
+    
+
 
 ---
 ## K8s tips
