@@ -1,5 +1,22 @@
+## linux version
+* Redhat based
+  * RHEL: Redhat enterprise edition 
+  * Centos: Redhat free edition, 1 release every two years. compiled using RHEL source code. 
+  * Fedora: inherit from Redhat personal edition RHL. 1 release every half year, use new technology first. 
+  * OEL: Oracle linux, 
+* Debian based
+  * Debian
+  * Ubuntu: every 6 month
+  * Mint
+* Slackware based
+  * SUSE
+* Unix based 
+  * Solaris: SunOS
+  * AIX: Run in IBM Power
 
 
+
+---
 ## linux service nslcd, nscd and sssd
 
 `nslcd`: local LDAP name service daemon. daemon for NSS and PAM lookups using LDAP. enables to configure the local system to load users and groups from an LDAP directory (remote), which could be used
