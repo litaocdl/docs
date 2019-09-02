@@ -22,11 +22,11 @@ cat cluster-cert.txt
 
   ![](https://github.com/litaocdl/docs/blob/master/pics/k8s_stuct.png)
   
-  Master Node:
+  Master Node 3 key components:
   
-  * API Server: statefulless, heart 
-  * Controller Manager: statefulless, manage pod replication.
-  * Scheduler: statefulless, pod scheudler 
+  * API Server: statefulless, heart. can have multi api-server if there is multiple master node. 
+  * Controller Manager: statefulless, manage pod replication. has various controller, like node controller, endpoint controller, namespace controller etc.
+  * Scheduler: statefulless, pod scheduler 
   * ETCD
 
   Worker:
@@ -40,7 +40,8 @@ cat cluster-cert.txt
   * DNS: domain to clusterip etc change
   * Web UI (Dashboard):
   
-  
+
+
 ### How k8s create a pod 
 
   ![](https://github.com/litaocdl/docs/blob/master/pics/k8s_create_pod.png)
@@ -378,7 +379,7 @@ Classification by priority
 
       d. `Taints` and `Tolerations`
          Taints: Added on node. a special label with `effect`, avoid pod deploy to a special node. 
-         
+
          ```
             taints:
              - effect: NoSchedule/PreferNoSchedule
@@ -399,6 +400,78 @@ Classification by priority
          ```
     
 
+---
+
+## k8s network module
+
+   The mini schedule item in k8s is pod. each pod has its own ip (`hostNetwork` pod has same ip with host), each container in the pod share same network (using docker `container` network model).
+
+   Two kinds of network
+
+   * CNM from docker
+       Container Network Model. Calico, Weave, Docker Swarm overlay, Macvlan, only support docker
+   * CNI from google, CoreOS, k8s
+       Container Network Interface. Calico, Weave, Flannel, kubernetes, Macvlan, support other containers like rkt.
+
+       pod -> pod
+       
+
+---
+
+## k8s storage
+  
+  `volumns`
+   k8s is using volumns to store the data, volumns does not have QoS restriction.
+
+  * configmap: start container
+  * secret: start container
+  * emptyDir: temp, emptydir will create a random location in host and will delete when pod delete.
+
+        ```
+        containers:
+          ...
+          volumeMounts:
+           - mountPath: /containerlocation
+            name: test
+        volumes:
+         - name test
+           emptyDir: {}
+        ```
+  * hostPath: stored in host machine, will not delete while pod delete. can share data between pod.
+
+     ```
+        containers:
+          ...
+          volumeMounts:
+           - mountPath: /containerlocation
+            name: test
+        volumes:
+         - name test
+           hostPath: 
+             #host directory 
+             path: /data
+     ```
+  * nfs: persistent 
+  * cephfs: persistent
+  * GlusterFS: persistent
+  * Cloud: persistent
+
+
+  `PV` PersistentVolume and `PVC` PersistentVolumnClaim
+
+     The storage object in k8s, claim a storage with a certain type and capacity. 
+
+     * static mode: Create PV and create `PersistentVolumnClaim`, use PVC to bind with pod. 
+     * dynamic mode: Create `storageClass`, then create `PersistentVolumnClaim` and use PVC to bind with pod. 
+
+---
+
+## k8s ops
+
+`kubectl cluster-info`
+`journalctl -u kubelet`
+isolate a node, once cordon, no new pod will be scheduled on this node. 
+`kubectl cordon/uncordon <node>`
 
 ---
 ## K8s tips
