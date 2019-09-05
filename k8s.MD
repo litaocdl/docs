@@ -26,20 +26,28 @@ cat cluster-cert.txt
   
   * API Server: statefulless, heart. can have multi api-server if there is multiple master node. 
   * Controller Manager: statefulless, manage pod replication. has various controller, like node controller, endpoint controller, namespace controller etc.
-  * Scheduler: statefulless, pod scheduler 
-  * ETCD
+  * Scheduler: statefulless, pod scheduler, decide the pod scheduled to which nodes. 
+  * ETCD: storage, only work with API Server
 
   Worker:
   
-  * kubelet
-  * kube-proxy 
+  * kubelet: running in worker node. register itself to master node. collects worker node status to master node.
+  * kube-proxy: redirect request to pod for services, use Round Robin algorithm. 
   * Container Runtime: docker, etc
   
   Addons
   
-  * DNS: domain to clusterip etc change
+  * CoreDNS: Service Discovery in k8s, available since k8s 1.11. https://coredns.io/
+      KubeDNS and CoreDNS are used for k8s services discovery, they are mapping the services/pod name with to the correct ip address. 
+      [KubeDNS vs CoreDNS](https://www.digitalocean.com/community/tutorials/an-introduction-to-the-kubernetes-dns-service)
+
+      debug coreDNS
+        * kubectl create -f https://raw.githubusercontent.com/litaocdl/docs/master/template/k8s/nslookup.yaml
+        * check dns `kubectl exec -it busybox -- nslookup <servicesname>`
+
   * Web UI (Dashboard):
-  
+  * CNI: Container network interface. 
+      [More about CNI](https://github.com/litaocdl/docs/blob/master/CNI.md)
 
 
 ### How k8s create a pod 
