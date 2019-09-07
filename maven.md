@@ -15,22 +15,24 @@ maven global repository http://repo1.maven.org/maven2/
  ## Dependency
  
    ### scope: mvn 有在构件的时候会用到三个classpath, 编译classpath,测试classpath和运行classpath. scope就是用来定义和限制classpath.
-     * `compile`: `c`-`t`-`r`. 依赖的有效范围在三个classpath
-     * `test`: c-`t`-r. 依赖的有效范围在测试classpath
-     * `provided`: `c`-`t`-r. 依赖的有效范围在编译和测试的classpath,在运行时态无效，运行时态由其他地方提供依赖。比如servlet-api
+   
+   
+   * compile: `c`-`t`-`r`.  依赖的有效范围在三个classpath
+   * test:  c-`t`-r. 依赖的有效范围在测试classpath
+   * provided:  `c`-`t`-r. 依赖的有效范围在编译和测试的classpath,在运行时态无效，运行时态由其他地方提供依赖。比如servlet-api
         ,运行时有container提供。
-     * `runtime`: c-`t`-`r`. 依赖的有效范围在测试和运行时有效，编译时无效。比如JDBC的具体实现，编译的时候用jdk的JDBC接口就行，
+   * runtime: c-`t`-`r`. 依赖的有效范围在测试和运行时有效，编译时无效。比如JDBC的具体实现，编译的时候用jdk的JDBC接口就行，
         不需要具体实现的依赖。
-     * `system`: `c`-`t`-r. 依赖可见范围和`provided`一样，但是必须通过`systemPath`显示指定依赖文件的路径
-     * `import`: c-t-r. 不会对maven的classpath产生任何影响，也就是都看不见
+   * system: `c`-`t`-r. 依赖可见范围和`provided`一样，但是必须通过`systemPath`显示指定依赖文件的路径
+   * import: c-t-r. 不会对maven的classpath产生任何影响，也就是都看不见
      
      传递依赖，A -依赖-> B, B -依赖-> C. A->B:第一直接依赖，B->C:第二直接依赖。 A -> C叫传递依赖。如果在maven中定义A的dependency,
      传递依赖是否在maven中存在并且让C影响maven的class，主要取决于第二直接依赖。
      
-     * 如果第二直接依赖是`compile`,传递依赖存在且为第一直接依赖
-     * 如果第二直接依赖是`runtime`,传递依赖存在且为第一直接依赖，except第一直接依赖为`compile`的时候会变成runtime
-     * 如果第二直接依赖是`provided`,传递依赖只有在第一直接依赖是`provided`的时候存在
-     * 如果第二直接依赖是`test`,传递依赖不存在
+   * 如果第二直接依赖是`compile`,传递依赖存在且为第一直接依赖
+   * 如果第二直接依赖是`runtime`,传递依赖存在且为第一直接依赖，except第一直接依赖为`compile`的时候会变成runtime
+   * 如果第二直接依赖是`provided`,传递依赖只有在第一直接依赖是`provided`的时候存在
+   * 如果第二直接依赖是`test`,传递依赖不存在
      
      
    |    依赖   | 第二直接依赖 |  compile  |test| provided |  runtime  |
