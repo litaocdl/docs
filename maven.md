@@ -65,7 +65,8 @@ maven global repository http://repo1.maven.org/maven2/
    
    ### Best Practice
    
-    * 显示声明项目中用到的直接依赖
+   * 显示声明项目中用到的直接依赖
+   * `mvn dependency:analyze`分析出的定义但没有用到的依赖要谨慎删除，因为有可能是为了显示的限制传递依赖的版本
          
  ```
    <dependencies>
