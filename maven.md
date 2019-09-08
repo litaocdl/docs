@@ -1,7 +1,9 @@
 
-maven global repository [http://repo1.maven.org/maven2/](http://repo1.maven.org/maven2/)
-or repo.maven.apache.org/maven2  `id=central`
-it is defined in `maven-model-builder-3.6.2.jar`
+maven central repository http://repo1.maven.org/maven2/
+
+or http://repo.maven.apache.org/maven2  
+
+For central repository, `id=central`. it is defined in `maven-model-builder-3.6.2.jar`
 
 ```
   <repositories>
