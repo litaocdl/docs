@@ -137,18 +137,18 @@ jboss maven repository [http://repository.jboss.com/maven2/](http://repository.j
    
    ## Maven生命周期
      
-     More about lifecycle http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
+   More about lifecycle http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
      
-     Maven有三套互相独立的生命周期
-     `clean`生命周期：负责项目清理,包括 pre-clean->clean->post-clean
-     `default`生命周期：负责构建所需要的所有步骤，包括 validate->initialize->...->compile->...->test->...->package->...->verify->install->deploy
-     `site`生命周期：负责建立和发布项目站点,pre-site->site->post-site->site-deploy
+   Maven有三套互相独立的生命周期
+   * `clean`生命周期：负责项目清理,包括 pre-clean->clean->post-clean
+   * `default`生命周期：负责构建所需要的所有步骤，包括 validate->initialize->...->compile->...->test->...->package->...->verify->install->deploy
+   * `site`生命周期：负责建立和发布项目站点,pre-site->site->post-site->site-deploy
      
-     生命周期周期中的每一个阶段的执行都包含这个阶段之前的阶段。
-     比如
-     `mvn clean install` 执行了clean周期中的pre-clean,clean以及default周期中install之前的步骤
+   生命周期周期中的每一个阶段的执行都包含这个阶段之前的阶段。
+   比如
+   `mvn clean install` 执行了clean周期中的pre-clean,clean以及default周期中install之前的步骤
      
-     maven生命周期中的每一步，都是和maven插件的目标绑定的。具体绑定可见 http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
+   maven生命周期中的每一步，都是和maven插件的目标绑定的。具体绑定可见 http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
  
    ## Maven插件和插件目标
    
