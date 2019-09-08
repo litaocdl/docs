@@ -1,16 +1,40 @@
 
-maven global repository http://repo1.maven.org/maven2/
+maven global repository [http://repo1.maven.org/maven2/](http://repo1.maven.org/maven2/)
+or repo.maven.apache.org/maven2  `id=central`
+it is defined in `maven-model-builder-3.6.2.jar`
 
-## Maven 构建顺序
+```
+  <repositories>
+    <repository>
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  ```
+
+jboss maven repository [http://repository.jboss.com/maven2/](http://repository.jboss.com/maven2/)
+
+## Maven 构建顺序 
 
    compile -> test --> package --> install.
    后一个会自动包含前一个命令
+   
    
 ## Maven坐标
 
    groupId, artifactId, version, packaging (default `jar`), classifier(附属构件)
    
    构件文件名： `artifactId-version[-classifier].packaging`  
+   
+   构件在仓库中的位置
+   
+   `groupId/artifactId/version/artifactId-version[-classifier].packaging`
+   see http://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.9.3/
    
  ## Dependency
  
@@ -86,3 +110,59 @@ maven global repository http://repo1.maven.org/maven2/
      </dependency>
     </dependencies>
  ```
+ 
+ ## 镜像
+   Use `mirrorOf` to specific a repositoryID, for all the request to that specific repository, will redirect to this mirror
+   `id=*` will redirect request for all repositorys. 
+   
+   ```
+    <mirrors>
+    <!-- mirror
+     | Specifies a repository mirror site to use instead of a given repository. The repository that
+     | this mirror serves has an ID that matches the mirrorOf element of this mirror. IDs are used
+     | for inheritance and direct lookup purposes, and must be unique across the set of mirrors.
+     |-->
+    <mirror>
+      <id>mirrorId</id>
+      <mirrorOf>repositoryId</mirrorOf>
+      <name>Human Readable Name for this Mirror.</name>
+      <url>http://my.repository.com/repo/path</url>
+    </mirror>
+  </mirrors>
+   ```
+   
+   ## Repository management software
+   
+   `Sonatype Nexus`, `Jarvana`, `MVNRepository`
+   
+   ## Maven生命周期
+     
+     More about lifecycle http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
+     
+     Maven有三套互相独立的生命周期
+     `clean`生命周期：负责项目清理,包括 pre-clean->clean->post-clean
+     `default`生命周期：负责构建所需要的所有步骤，包括 validate->initialize->...->compile->...->test->...->package->...->verify->install->deploy
+     `site`生命周期：负责建立和发布项目站点,pre-site->site->post-site->site-deploy
+     
+     生命周期周期中的每一个阶段的执行都包含这个阶段之前的阶段。
+     比如
+     `mvn clean install` 执行了clean周期中的pre-clean,clean以及default周期中install之前的步骤
+     
+     maven生命周期中的每一步，都是和maven插件的目标绑定的。具体绑定可见 http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
+ 
+   ## Maven插件和插件目标
+   
+   每一个插件完成多种功能，每一个功能点叫插件目标 `dependency:list`  其中dependency表示插件 `maven-dependency-plugin`,而list表示的是插件目标，除此之外，还有`dependency:tree`, `dependency:analyze`
+   
+   maven的官方插件 http://maven.apache.org/plugins/index.html
+  
+   as `test` step is handled by maven-surefire-plugin, we can use `mvn surefire:help -Ddetail=true` to get the help content of surefure, as surefire has a help goal. 
+   
+   ### 目标前缀
+   we can use 
+   `mvn help:describe -Dplugin=groupid:artifactId:version` 查看插件的帮助，
+   -Dplugin可以简化为插件目标前缀，比如
+   `mvn help:describe -Dplugin=surefire`
+   `mvn help:describe -Dplugin=compiler`
+   
+   help是 `maven-help-plugin`的目标前缀,dependency是`maven-dependency-plugin`的目标前缀
