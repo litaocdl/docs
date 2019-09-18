@@ -81,6 +81,7 @@ auto generate secrets values
 kubectl create secret generic <name> --from-literal=consoleApiKey=$(head -c 512 /dev/urandom | LC_CTYPE=C tr -cd 'a-zA-Z0-9' | head -c 32) --namespace <your namespace>
 ```
 
+secrets type: `Opaque` means secrets is unstructured, could contains any kinds of key/value. in contrast, there are secrets types which k8s understanding. 
 
 
 ### POD
@@ -259,7 +260,8 @@ ingress
 
 ### ConfigMap
 
-`kubectl create configmap <> --from-file=<>`
+`kubectl create configmap <> --from-file=<>` # key is filename, value is filecontent
+`kubectl create configmap <> --from-env-file=<>` key/value are defined in file
 
  Reference config map in Pod. 
  1. Use as env , when configure map is recreate, the env will not update. 
