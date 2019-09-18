@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-demo
+spec:
+  hostNetwork: true
+  containers:
+  - name: nginx-demo
+    image: nginx
+    ports:
+    - containerPort: 80
+  terminationGracePeriodSeconds: 60
