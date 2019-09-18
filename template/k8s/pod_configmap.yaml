@@ -13,7 +13,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               # The ConfigMap containing the value you want to assign to SPECIAL_LEVEL_KEY
-              name: test-config
+              name: special-config
               # Specify the key associated with the value
-              key: key.name
+              key: dep
   restartPolicy: Never
