@@ -717,6 +717,21 @@ So in the real word, different CA are all signed by its parent CA and back to th
   keytool  -export -noprompt  -alias ${cert.alias} -file ${cert.file}  -keystore ${keystore.file} -storepass ${keystore.pass}
 ```
 
+  check the der format cert
+  
+  ```
+  keytool -v -printcert -file ca.der
+  ```
+  import the der format into java truststore
+  
+  ```
+  keytool -importcert -alias startssl -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -file ca.der
+  ```
+  check the der import
+  
+  ```
+  keytool -keystore "$JAVA_HOME/jre/lib/security/cacerts" -storepass changeit -list | grep startssl
+  ```
 Export the certification to PEM format
 
 ```
