@@ -69,3 +69,28 @@ https://docs.docker.com/docker-for-mac/docker-toolbox/
      * Endpoints
      * Network
      * Sandbox
+     
+     
+     
+ ### Create docker registry 
+ 
+ reference: https://docs.docker.com/registry/deploying/
+ 
+   1. Prepare CA certification 
+   2. Install docker registry image 
+   
+   ```
+   docker run -d \
+  --restart=always \
+  --name registry \
+  -v "$(pwd)"/certs:/certs \
+  -e REGISTRY_HTTP_ADDR=0.0.0.0:443 \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
+  -p 443:443 \
+  registry:2
+   
+   ```
+   
+   
+
