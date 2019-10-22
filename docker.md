@@ -77,21 +77,33 @@ https://docs.docker.com/docker-for-mac/docker-toolbox/
  reference: https://docs.docker.com/registry/deploying/
  
    1. Prepare CA certification 
+   
+      We will get a my.crt, my.key and intermediatecert.pem and caroot.pem keys
+      if intermediatecert and caroot is in der format, change it to pem
+      
+      ```
+       openssl x509 -inform der -in carootcert.der -out carootcert.pem
+      ```
+      
+      merge the caroot and intermediatecert into my.crt using cat. 
+      
    2. Install docker registry image 
    
    ```
    docker run -d \
   --restart=always \
   --name registry \
-  -v "$(pwd)"/certs:/certs \
+  -v /mnt/certs:/certs \
   -v /mnt/registry:/var/lib/registry
   -e REGISTRY_HTTP_ADDR=0.0.0.0:443 \
-  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
-  -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/my_own.crt \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/my_own.key \
   -p 443:443 \
   registry:2
    
    ```
+   if we met the permission denied error when visiting /certs, issue `su -c "setenforce 0"`
    
+   after the docker registry started, we can visit from `https://taoos11.fyre.ibm.com/v2/` 
    
 
