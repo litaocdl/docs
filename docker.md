@@ -106,4 +106,12 @@ https://docs.docker.com/docker-for-mac/docker-toolbox/
    
    after the docker registry started, we can visit from `https://taoos11.fyre.ibm.com/v2/` 
    
+   and can also docker push and docker pull
+   
+   ```
+     docker push taoos11.fyre.ibm.com/uc/base-images
+     docker pull taoos11.fyre.ibm.com/uc/base-images
+   
+   ```
+   
 
