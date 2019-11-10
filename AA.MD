@@ -55,15 +55,71 @@ Form based authentication is putting the username and password into http body no
 ```
 curl -X POST http://example.com -d "{"username":<>,"password":<>}"
 ```
+## OAUTH1
 
+Open Authorization, open standard for token-based authentication and authorization on internet. Started in Dec,2007.
+The purpose of OAUTH is providing a way to access the resource but not provide the credentials, solve the authorization problem. 
+  Reference: https://oauth1.wp-api.org/docs/basics/Auth-Flow.html . 
+  
+ Steps:  
+ 1. Init. client send request to the authentication server for auth token (oauth_token, and oauth_token_secrets)
+ 2. Authentication. client redirect the request to authentication server for user login and trust the oauth_token
+ 3. Token exchange. client send send the oauth_token to server to exchange to long term access token for resource access. 
+ 
 ## OAUTH2 Authentication 
 
+   OAUHT2 is the next verison of OAUTH1.0, but not support OAUTH1.0 backwords. 
+   OAUTH2 define the following roles  
+   * Client: website A
+   * Resource Owner: User
+   * Resource Server: google
+   * Authorization Server: google
+   
+   Client want to visit the reource hold by the resource owner. 
+   1. Client redirect the request to the `Authentication Server` with `call back url` and `Response Type` 
+   2. Authentication Server Authenticated the user credentials, and let user interact whether approve the resource check.
+   3. If user agree, `Authentication Server` redirect the url to the `call back url` along with `authentication code`
+   4. Client then in backends use the `authentication code`,`clientid` and `client password` to exchange the `accessToken` and
+   `refresh token` with `Authentication Server`
+   5. Client use access token to interact with `Resource Owner` for resource exchange. 
+   
+   ![](https://github.com/litaocdl/docs/blob/master/pics/Oauth2.png)
 
+   grant type:  
+   * code   Authentication code returned with redirect uri
+   * token  access token is returned directly with redirect uri
+   * password Resource owner password credentials
+   * client credential
+   
+   Reference: https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2#oauth-roles
+   
+   
 ## IAM 
 
 ## OPEN ID
 
+   OAUTH2 is used to solve the authorization problem, whileas OPENID is used to solve the authentication problem. 
+   In OAUTH2 `grant_code=code` catagory, when retrieve the access token, client can also send a ID_TOKEN to the server, 
+   the ID_TOKEN is a private key encrypted JWT Token which include the user basic information.
+   
+   ![openid](https://github.com/litaocdl/docs/blob/master/pics/openid.png)
+
 ## SAML
 
+## JWT Token
 
+when talking about JWT, we are compared it with SWT and SAML tokens .
+JWT and SAML can use private/public key sign, while SWT can only signed by symmetrically shared secrets 
+header.payload.signature. 自认证token.
+
+header:
+  alg: HS256
+  typ: JWT
+payload:
+   registered claims: iss, exp, sub, aud ...
+signature:
+signature = HMACSHA256( (base64URL(header) + “." + base64URL(payload)), secrets)
+
+HMACSHA256 is HMAC + SHA256. HMAC mixes a secrets with message data, hashes the result with hash functions. mixes the hash value and secrets agains and hashes the result, output is 256 bits length. 
 ## Reference
+
