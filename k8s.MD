@@ -617,3 +617,10 @@ kubectl get endpoints | grep kubernetes
 ```
 curl -k  https://<ip>/api/v1/namespaces -H "Authorization: Bearer $token"
 ```
+
+
+### Trouble shooting 
+
+#### can not pull image from redhat, missing redhat certification
+
+openssl s_client -showcerts -servername registry.access.redhat.com -connect registry.access.redhat.com:443  2>/dev/null | openssl x509 -text > /etc/rhsm/ca/redhat-uep.pem
