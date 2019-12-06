@@ -90,7 +90,7 @@ https://docs.docker.com/docker-for-mac/docker-toolbox/
    2. Install docker registry image 
    
    ```
-   docker run -d \
+   docker run -d --privileged \
   --restart=always \
   --name registry \
   -v /mnt/certs:/certs \
