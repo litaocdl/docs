@@ -81,17 +81,17 @@ Auto MDI/MDIX
 switch支持自动识别直线或者交叉线
 
 
-## 常用网络命令
+## 常用网络命令  
 
-*dig* 
-check dns 解析，找到最近的dns
+*dig*  
+check dns 解析，找到最近的dns  
 
-*ifconfig*  
-查询，设置网卡等参数  ifconfig <interface> [up|down]
-RX/TX: 启动到目前接收到/发送的数据包
-MTU: MAC数据包的最大值
-Hwaddr: MAC地址
-collisions: 冲突的次数，数值大表示网络不好
+*ifconfig*   
+查询，设置网卡等参数  ifconfig <interface> [up|down]  
+RX/TX: 启动到目前接收到/发送的数据包  
+MTU: MAC数据包的最大值  
+Hwaddr: MAC地址  
+collisions: 冲突的次数，数值大表示网络不好  
 ```
 ifconfig eth0
 eth0      Link encap:Ethernet  HWaddr 00:11:32:89:69:B2  
@@ -103,14 +103,14 @@ eth0      Link encap:Ethernet  HWaddr 00:11:32:89:69:B2
           collisions:0 txqueuelen:1000 
           RX bytes:57304739585 (53.3 GiB)  TX bytes:7286882409 (6.7 GiB)
 ```
-*route*
-本地路由表显示和修改
-`route -n` 列出当前路由表  
-Destination/Genmask: 目标网络的network和netmask
-Gateway: 该网络通过哪一个Gateway出去的
-FLAG: U: 路由时启动的
-G: 需要通过外部主机传送数据包
-D: 动态路由
+*route*  
+本地路由表显示和修改  
+`route -n` 列出当前路由表    
+Destination/Genmask: 目标网络的network和netmask  
+Gateway: 该网络通过哪一个Gateway出去的  
+FLAG: U: 路由时启动的  
+G: 需要通过外部主机传送数据包  
+D: 动态路由  
 
 ```
 route 
@@ -128,59 +128,59 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 192.168.100.0   0.0.0.0         255.255.255.0   U     0      0        0 eth0
 
 ```
-*ip*
+*ip*  
 综合命令 
-`-s` 显示统计信息
+`-s` 显示统计信息  
 
 `ip link`  
-查看设备相关信息，包括MTU,MAC
+查看设备相关信息，包括MTU,MAC  
 
-`ip addr`  
-IP协议相关
+`ip addr`   
+IP协议相关  
 
 `ip route`  
-路由相关
+路由相关  
 	
-*iwlist* *iwconfig*
-利用无线网卡对AP检测
+*iwlist* *iwconfig*  
+利用无线网卡对AP检测  
 
-*dhclient*
+*dhclient*  
 dhclient <interface> 让设备去DHCP获取IP
 
-*ping*
-通过ICMP数据包进行网络检查
-参数
-`-c number` ping 次数
-`-n ` 输出是不进行ip于主机名的复查，速度快
-`-s number` 自定义ICMP数据包大小，默认56B
-`-M [do|dont]` 用于检测网络MTU,do表示发送出去的数据包不能被拆分 (`-D in MAC`)
+*ping*  
+通过ICMP数据包进行网络检查  
+参数  
+`-c number` ping 次数  
+`-n ` 输出是不进行ip于主机名的复查，速度快  
+`-s number` 自定义ICMP数据包大小，默认56B  
+`-M [do|dont]` 用于检测网络MTU,do表示发送出去的数据包不能被拆分 (`-D in MAC`)  
 
-`ping -c 1 -s 2000 -M do www.sina.com` 测试发送一个2000B的数据包，不允许拆包，是否可以到达
-
-
-*traceroute*
-检测两个设备之间的路由
-`-n` 解析ip only
-`-U` 使用UDP
-`-I` 使用ICMP
-`-T` 使用TCP
-
-*netstat*
-检查本地网络
-`-rn` 与路由表有关参数
-`-antulpc` 与网络有关参数
+`ping -c 1 -s 2000 -M do www.sina.com` 测试发送一个2000B的数据包，不允许拆包，是否可以到达  
 
 
-*host* *nslookup*
-查询某个主机的ip
-`host www.sina.com` 使用`/etc/resolv.conf`作为dns
-`host www.sina.com <dns>`
+*traceroute*  
+检测两个设备之间的路由  
+`-n` 解析ip only  
+`-U` 使用UDP  
+`-I` 使用ICMP  
+`-T` 使用TCP  
 
-*links*
-文字的方式浏览网页，查看Linux doc
+*netstat*  
+检查本地网络  
+`-rn` 与路由表有关参数  
+`-antulpc` 与网络有关参数  
 
-*wget*
-获取网页数据，配置/etc/wgetrc
+
+*host* *nslookup*  
+查询某个主机的ip  
+`host www.sina.com` 使用`/etc/resolv.conf`作为dns  
+`host www.sina.com <dns>`  
+
+*links*  
+文字的方式浏览网页，查看Linux doc  
+
+*wget*  
+获取网页数据，配置/etc/wgetrc  
 
 *tcpdump* 
 
