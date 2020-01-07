@@ -12,7 +12,7 @@ TCP或者UDP数据包中添加额外source port和destination port用来定义�
 0~65535（2的16次方）
 小于1024的端口号为特权端口号，需要有root的权限才能开启。发送数据包的时候源端口号是随机分配一个大于1024的端口号。
 
-### Layer#3* 网络层 Network Layer  IP, arp ICMP is used in this layer.防火墙在这一层通过ip地址，数据包内容进行拦截
+### *Layer#3* 网络层 Network Layer  IP, arp ICMP is used in this layer.防火墙在这一层通过ip地址，数据包内容进行拦截
 网络层相关的内容
 IP数据包最大可以达到65535B,包含源和目标ip地址
 
