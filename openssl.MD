@@ -70,6 +70,10 @@ Verified OK
 ### Check certification expired date 
 openssl s_client -servername NAME -connect HOST:PORT 2>/dev/null | openssl x509 -noout -dates
 
+### Check starttls certs
+
+openssl s_client -connect host:port -starttls smtp
+
 ### Who the certification issue to 
 openssl s_client -servername shellhacks.com -connect shellhacks.com:443 2>/dev/null | openssl x509 -noout -subject -issuer
 
