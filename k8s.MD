@@ -624,3 +624,13 @@ curl -k  https://<ip>/api/v1/namespaces -H "Authorization: Bearer $token"
 #### can not pull image from redhat, missing redhat certification
 
 openssl s_client -showcerts -servername registry.access.redhat.com -connect registry.access.redhat.com:443  2>/dev/null | openssl x509 -text > /etc/rhsm/ca/redhat-uep.pem
+
+#### node port can access from worker node but not from master node
+
+  cat /proc/sys/net/ipv4/ip_forward
+  0
+  
+  change it to 1
+  sysctl -w net.ipv4.ip_forward=1
+ http://www.ducea.com/2006/08/01/how-to-enable-ip-forwarding-in-linux/
+
