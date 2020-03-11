@@ -83,3 +83,10 @@ openssl s_client -servername www.shellhacks.com -connect www.shellhacks.com:443 
 ## show public key
 
 openssl s_client -connect localhost:55000 | openssl x509 -pubkey -noout
+
+## extract certification from db2 p12/kdb and use in jcc
+
+ gsk8capicmd_64 -cert -export -db xxx.p12 -stashed -label "xxx" -type p12 -target mycert.p12 
+ openssl pkcs12 -in mycert.p12 -out test.pem -nokeys
+ 
+ use test.pem in jcc connection. sslCertLocation=test.pem
