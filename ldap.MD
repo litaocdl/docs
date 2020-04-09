@@ -15,9 +15,84 @@ centos or Fedora
 ```
 yum install openldap-clients
 ```
-#### Search for entries specific by `-b`, binding using `-D` and `-w`
+#### Search for entries specific by `-b`, binding using `-D` and `-w` (-W to input password from standard input)
 ```
 ldapsearch -x -LLL -D cn=xx,dc=xxx,dc=com -w xxx -H ldap://<ip> -b ou=People,dc=xxx,dc=com
+```
+
+`-LLL` let talk about it
+
+ Search results are display in LDAP Data Interchange Format  detailed  in ldif(5).   
+ A  single  -L restricts the output to LDIFv1.
+ A second -L disables comments.  
+ A third -L disables printing of the LDIF version.  
+ The default is to use an extended version of LDIF.
+ 
+default: see extended LDIF
+ 
+```
+bash-4.2$ ldapsearch -H ldapi://   -s base -b "" supportedSASLMechanisms
+SASL/EXTERNAL authentication started
+SASL username: gidNumber=55+uidNumber=55,cn=peercred,cn=external,cn=auth
+SASL SSF: 0
+# extended LDIF
+#
+# LDAPv3
+# base <> with scope baseObject
+# filter: (objectclass=*)
+# requesting: supportedSASLMechanisms
+#
+
+#
+dn:
+supportedSASLMechanisms: EXTERNAL
+
+```
+
+`-L`  see version 1
+
+```
+bash-4.2$ ldapsearch -H ldapi://  -L  -s base -b "" supportedSASLMechanisms
+SASL/EXTERNAL authentication started
+SASL username: gidNumber=55+uidNumber=55,cn=peercred,cn=external,cn=auth
+SASL SSF: 0
+version: 1
+
+#
+# LDAPv3
+# base <> with scope baseObject
+# filter: (objectclass=*)
+# requesting: supportedSASLMechanisms
+#
+
+#
+dn:
+supportedSASLMechanisms: EXTERNAL
+```
+
+`-LL`: disable comments
+
+```
+bash-4.2$ ldapsearch -H ldapi://  -LL  -s base -b "" supportedSASLMechanisms
+SASL/EXTERNAL authentication started
+SASL username: gidNumber=55+uidNumber=55,cn=peercred,cn=external,cn=auth
+SASL SSF: 0
+version: 1
+
+dn:
+supportedSASLMechanisms: EXTERNAL
+
+```
+
+`-LLL` disable the version print 
+
+```
+bash-4.2$ ldapsearch -H ldapi://  -LLL  -s base -b "" supportedSASLMechanisms
+SASL/EXTERNAL authentication started
+SASL username: gidNumber=55+uidNumber=55,cn=peercred,cn=external,cn=auth
+SASL SSF: 0
+dn:
+supportedSASLMechanisms: EXTERNAL
 ```
 
 #### Update entry password
@@ -150,6 +225,43 @@ query the ldap command using SASL
 ldapsearch -H ldapi:// -Y EXTERNAL -b "cn=config" -LLL -Q "olcDatabase=*"
 ```
 
+`-Y EXTERNAL` means use EXTERNAL SASL mechanism, if -Y is not specificed, will search one mechanism
+
+to get all supported Mechanism
+
+```
+ldapsearch -H ldapi://  -LLL -s base -b "" supportedSASLMechanisms
+```
+
+Since the ldapi scheme requires a local connection, we never will have to specify a server name here.
+
+### LDAP Authentication 
+LDAP need client identify them self so sever can grant level of access, there are three common kinds of authentication, this is called binding. 
+
+#### anonymous binding
+
+use `-x`, as most ldap server enable the SASL authentication, use -x means we do not want to use SASL
+
+#### Simple Authentication
+A simple bind uses an entry within the LDAP server to authenticate the request. The DN (distinguished name) of the entry functions as a username for the authentication. Inside of the entry, an attribute defines a password which must be provided during the request.
+
+use `-D -w/W`
+
+#### SASL authentication 
+
+SASL stands for simple authentication and security layer. It is a framework for hooking up authentication methods with protocols in order to provide a flexible authentication system that is not tied to a specific implementation. 
+
+SASL authentication provides various mechanism, to find all the mechanism we can issue 
+
+```
+ldapsearch -H ldap:// -x -LLL -s base -b "" supportedSASLMechanisms
+```
+
+one common SASL mechanism is EXTERNAL
+
+```
+The EXTERNAL mechanism indicates that authentication and security is handled by some other means associated with the connection. For instance, it can be used with SSL to provide encryption and authentication.
+```
 
 
 ### LDAP server 
