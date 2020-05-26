@@ -1,3 +1,31 @@
+## Linux CA certification commands
+
+* Debian  
+  `update-ca-certificates`
+   The command will read certificates from files line by line `/etc/ca-certificates.conf` and read certification from location `/usr/share/ca-certificates/` then generate certification in `/etc/ssl/certs/`, and create a main crt into `/etc/ssl/certs/ca-certificates.crt`. only `.crt` file under `/usr/share/ca-certificates/` will be recognized. user need 
+   
+  `/etc/ssl/certs/ca-certificates.crt`  
+  A single-file version of CA certificates.  This holds all CA certificates that  you activated in /etc/ca-certificates.conf
+  
+  Add CA  
+  1. Copy your CA to dir /usr/local/share/ca-certificates/  
+  2. Use command: sudo cp foo.crt /usr/local/share/ca-certificates/foo.crt
+  3. Update the CA store:  update-ca-certificates  
+  Remove CA
+  1. Remove your CA.
+  2. Update the CA store:  update-ca-certificates --fresh
+  
+* Redhat  
+  `update-ca-trust`  
+ 
+  1.Install: `yum install ca-certificates`
+  2.Enable the dynamic CA configuration feature: `update-ca-trust force-enable`
+  3.Add it as a new file to /etc/pki/ca-trust/source/anchors/: `cp foo.crt /etc/pki/ca-trust/source/anchors/`
+  4.Use command: `update-ca-trust extract`
+  
+* Mac
+
+
 ## linux version
 * Redhat based
   * RHEL: Redhat enterprise edition 
