@@ -105,6 +105,10 @@ The purpose of OAUTH is providing a way to access the resource but not provide t
    ![openid](https://github.com/litaocdl/docs/blob/master/pics/openid.png)
 
 ## SAML
+Security Assertion Markup Language is an XML-based, open-standard data format for exchanging authentication and authorization data between parties, in particular, between an identity provider and a service provider. SAML authorization is a two step process and you are expected to implement support for both.
+
+## CAS
+Central Authentication Service
 
 ## JWT Token
 
