@@ -96,3 +96,7 @@ openssl s_client -connect localhost:55000 | openssl x509 -pubkey -noout
  add in keystore
  keytool -import -noprompt -trustcacerts -alias iamcerts -file ./iamcert.pem -keystore /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.91-0.b14.el6_7.x86_64/jre/lib/security/cacerts -storepass changeit
  
+ ## Generate certification with `extendedKeyUsage` openssl-111
+ 
+ openssl req -new -newkey rsa:2048 -x509 -days 730 -nodes  -out cert.crt -keyout cert.key -addext extendedKeyUsage=serverAuth -subj "/C=US/ST=CA/L=Silicon Valley Lab/O=Data and AI/OU=IBM Data Platform/emailAddress=ibm-analytics-data-platform@us.ibm.com/CN=IBM-Data-and-AI"
+ 
