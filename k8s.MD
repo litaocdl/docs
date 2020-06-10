@@ -249,10 +249,67 @@ Services Discovery
 * Istio: Ingress gateway, 7 layer
 * hostnetwork: `hostNetWork`docker use hostnetwork, use another services to register and manage the port. serivces is mapped to port. 
 
+Expose service
 
-ingress
+Service could be exposed on deployment, pod , service, rc, rs level 
+
+```
+kubectl -n xxx expose [pod/deployment/service/rc/rs] xxx --name=<service name>. --port=<port service will expose>. --target-port=<port service port will redirect to> --protocol=<tcp or udp, tcp is default> --type=[ClusterIP(default), NodePort, or LoadBalancer] --external-ip=<external ip which could routed to the svc>
+```
+
+if `--port` is not specific, will use the default port the resource exposed. 
+
+Using `ClusterIP` can also expose a port on `a` node.  but `NodePort` will expose port on all nodes.
+`kubectl -n xxx expose deployment xxx --name=xxx --type=ClusterIP --external-ip=<a node ip>`
+
+`Expose Logic`
+
+`ClusterIP` will expose `spec.clusterIp`:`spec.ports[*].port`, so service could only be accessed from virtual clusterip and port. clusterIP svc looks like below. if externalIP is set `--external-ip=xxxx`, then `ClusterIP` will expose
+`spec.clusterIp`:`spec.ports[*].port` and `spec.externalIPs[*]`:`spec.ports[*].port`
+
+```
+NAME                     TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)          AGE
+my-service-clusterip     ClusterIP      10.111.204.192   <none>          8080/TCP         41m
+```
+
+`NodePort` will expose the following:
+
+`<NodeIP>`:`spec.ports[*].nodePort`  exposed on all nodes ip with static port `nodePort`.     
+`spec.clusterIp`:`spec.ports[*].port` exposed on clusterIP with port
+
+when request comes to `NodeIP:nodePort`, request will be redirect to `clusterIP:port` and then redirect to `targetPort`
+NodePort looks like this, when create NodePort, nodeport can not be assigned, which will generated automatically.  
+
+```
+NAME                     TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)  (port/nodePort)        AGE
+my-service-nodeport2     NodePort       10.104.140.15    <none>          8080:38717/TCP                  15m
+```
+
+`LoadBalancer` will expose the following:  
+`spec.loadBalancerIp`:`spec.ports[*].port` expose the `port` to balanceIP.       
+`<NodeIP>`:`spec.ports[*].nodePort`     expose the nodePort to node ips. 
+`spec.clusterIp`:`spec.ports[*].port`    expose the port on clusterIP. 
+
+we can access the `loadBalanceIP:port` , request will routed to `nodeIP:nodePort`, then to `clusterIP:port`, then to `targetPort`. 
+
+LoadBalancer looks like:
+
+```
+NAME                     TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)  (port/nodePort)        AGE
+my-service               LoadBalancer   10.100.230.21    <pending>       8080:4123/TCP                   55m
+
+```
+
+A diagram from web for those three
+
+![](https://i.stack.imgur.com/1owA5.jpg)
+
+### ingress
 
 ![](https://github.com/litaocdl/docs/blob/master/pics/ingress.png)
+
+
+
 
 ### Job
 
@@ -296,6 +353,8 @@ Etcd has size limitation (1M) for the values under one entry. so the configure m
   `kubectl label node <> key=value`
   remove label
   `kubectl label node <> key-`
+  
+---
 ---
 
 ## K8s QoS
