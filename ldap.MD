@@ -339,6 +339,7 @@ yum install openldap openldap-clients openldap-servers
 ldap client utils command:
 
 |Command	|Description|
+|-|-|
 |ldapadd	|Allows you to add entries to an LDAP directory, either from a file, or from standard input. It is a symbolic link to ldapmodify -a.|
 |ldapcompare	|Allows you to compare given attribute with an LDAP directory entry.|
 |ldapdelete	|Allows you to delete entries from an LDAP directory.|
@@ -353,6 +354,7 @@ ldap client utils command:
 ldap server utils command:
 
 |Command	|Description|
+|-|-|
 |slapacl	|Allows you to check the access to a list of attributes.|
 |slapadd	|Allows you to add entries from an LDIF file to an LDAP directory.|
 |slapauth	|Allows you to check a list of IDs for authentication and authorization permissions.|
@@ -401,6 +403,8 @@ openldap no longer use slapd.conf file, instead it is using configuration databa
 
 olcAllows features (space separated)
 
+|Option	|Description|
+|-|-|
 |bind_v2	|Enables the acceptance of LDAP version 2 bind requests.|
 |bind_anon_cred	|Enables an anonymous bind when the Distinguished Name (DN) is empty.|
 |bind_anon_dn	|Enables an anonymous bind when the Distinguished Name (DN) is not empty.|
@@ -411,6 +415,7 @@ olcAllows features (space separated)
 The olcDisallows directive allows you to specify which features to disable. It takes the following form:
 
 |Option	|Description|
+|-|-|
 |bind_anon	|Disables the acceptance of anonymous bind requests.|
 |bind_simple	|Disables the simple bind authentication mechanism.|
 |tls_2_anon	|Disables the enforcing of an anonymous session when the STARTTLS command is received.|
