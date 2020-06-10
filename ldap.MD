@@ -264,7 +264,9 @@ The EXTERNAL mechanism indicates that authentication and security is handled by 
 ```
 
 
-### LDAP server 
+## LDAP server 
+
+### Ubuntu
 
 [reference for ubnuntu](https://help.ubuntu.com/lts/serverguide/openldap-server.html)
 
@@ -322,3 +324,125 @@ dn: cn=admin,dc=fyre,dc=ibm,dc=com : root dn
 ```
 
 
+### Redhat
+
+Reference: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/system-level_authentication_guide/openldap
+
+Install:
+
+```
+openldap is ldap depends services
+openldap-clients is ldap client utils
+openldap-servers is ldap server utils
+yum install openldap openldap-clients openldap-servers
+```
+ldap client utils command:
+
+|Command	|Description|
+|ldapadd	|Allows you to add entries to an LDAP directory, either from a file, or from standard input. It is a symbolic link to ldapmodify -a.|
+|ldapcompare	|Allows you to compare given attribute with an LDAP directory entry.|
+|ldapdelete	|Allows you to delete entries from an LDAP directory.|
+|ldapexop|	Allows you to perform extended LDAP operations.|
+|ldapmodify	|Allows you to modify entries in an LDAP directory, either from a file, or from standard input.|
+|ldapmodrdn	|Allows you to modify the RDN value of an LDAP directory entry.|
+|ldappasswd	|Allows you to set or change the password for an LDAP user.|
+|ldapsearch	|Allows you to search LDAP directory entries.|
+|ldapurl	|Allows you to compose or decompose LDAP URLs.|
+|ldapwhoami|	Allows you to perform a whoami operation on an LDAP server.|
+
+ldap server utils command:
+
+|Command	|Description|
+|slapacl	|Allows you to check the access to a list of attributes.|
+|slapadd	|Allows you to add entries from an LDIF file to an LDAP directory.|
+|slapauth	|Allows you to check a list of IDs for authentication and authorization permissions.|
+|slapcat	|Allows you to pull entries from an LDAP directory in the default format and save them in an LDIF file.|
+|slapdn	|Allows you to check a list of Distinguished Names (DNs) based on available schema syntax.|
+|slapindex	|Allows you to re-index the slapd directory based on the current content. Run this utility whenever you change indexing options in the configuration file.|
+|slappasswd	|Allows you to create an encrypted user password to be used with the ldapmodify utility, or in the slapd configuration file.|
+|slapschema	|Allows you to check the compliance of a database with the corresponding schema.|
+|slaptest	|Allows you to check the LDAP server configuration.|
+
+Start Server:  
+systemctl start slapd.service
+
+Auto Start
+systemctl enable slapd.service
+
+Stop:
+systemctl stop slapd.service
+
+disable auto start
+
+systemctl disable slapd.service
+
+verify :
+systemctl is-active slapd.service
+openldap server Configurations:
+
+`/etc/openldap/ldap.conf`:
+
+The configuration file for client applications that use the OpenLDAP libraries. This includes ldapadd, ldapsearch, Evolution, and so on.
+
+`/etc/openldap/slapd.d/`:
+The directory containing the slapd configuration.The slapd configuration consists of LDIF entries organized in a hierarchical directory structure, and the recommended way to edit these entries is to use the server utilities
+
+openldap no longer use slapd.conf file, instead it is using configuration database under slapd.d, to convert slapd.conf to database, try
+
+`slaptest -f /etc/openldap/slapd.conf -F /etc/openldap/slapd.d/`
+
+
+*
+
+
+*Global configuration file: `/etc/openldap/slapd.d/cn=config.ldif`, it contains: 
+
+`olcAllows` : indicates which feature is allowed
+
+olcAllows features (space separated)
+
+|bind_v2	|Enables the acceptance of LDAP version 2 bind requests.|
+|bind_anon_cred	|Enables an anonymous bind when the Distinguished Name (DN) is empty.|
+|bind_anon_dn	|Enables an anonymous bind when the Distinguished Name (DN) is not empty.|
+|update_anon	|Enables processing of anonymous update operations.|
+|proxy_authz_anon	|Enables processing of anonymous proxy authorization control.|
+
+`olcDisallows`
+The olcDisallows directive allows you to specify which features to disable. It takes the following form:
+
+|Option	|Description|
+|bind_anon	|Disables the acceptance of anonymous bind requests.|
+|bind_simple	|Disables the simple bind authentication mechanism.|
+|tls_2_anon	|Disables the enforcing of an anonymous session when the STARTTLS command is received.|
+|tls_authc	|Disallows the STARTTLS command when authenticated.|
+
+
+*Front end configuration file: `etc/openldap/slapd.d/cn=config/olcDatabase={-1}frontend.ldif`
+
+Defines global database options, such as access control lists (ACL). For details, see the Global Database Options section in the slapd-config(5) man page.
+
+*Monitor back-end configuration file: `/etc/openldap/slapd.d/cn=config/olcDatabase={1}monitor.ldif` 
+
+Controls the OpenLDAP monitor back end. If enabled, it is automatically generated and dynamically updated by OpenLDAP with information about the running status of the daemon. The suffix is cn=Monitor and cannot be changed. For further details, see the slapd-monitor(5) man page.
+
+*Database configuration file: `/etc/openldap/slapd.d/cn=config/olcDatabase={2}hdb.ldif`
+
+By default, the OpenLDAP server uses the hdb database back end. Besides that it uses a hierarchical database layout which supports subtree renames, it is identical to the bdb back end and uses the same configuration options. The configuration for this database back end is stored in the /etc/openldap/slapd.d/cn=config/olcDatabase={2}hdb.ldif file.
+
+slapd-mdb: memory-mapped db backend to slapd
+slapd-hdb: Berkeley DB backends to slapd
+slapd-man slapd-hdb man slapd-mdb
+
+Here is the options for database configuration:
+
+`olcReadOnly TRUE/FALSE`  
+The olcReadOnly directive allows you to use the database in a read-only mode. 
+
+`olcRootDN cn=bluldap,dc=blustratus,dc=com`  
+The olcRootDN directive allows you to specify the user that is unrestricted by access controls or administrative limit parameters set for operations on the LDAP directory. 
+
+`olcRootPW`  accept clearText or hash value, hash value could be generated by using `slappaswd`  
+The olcRootPW directive allows you to set a password for the user that is specified using the olcRootDN directive. 
+
+`olcSuffix: dc=blustratus,dc=com`  
+The olcSuffix directive allows you to specify the domain for which to provide information. 
