@@ -92,9 +92,14 @@ openssl s_client -connect localhost:55000 | openssl x509 -pubkey -noout
  use test.pem in jcc connection. sslCertLocation=test.pem
  
  ## Get certification of a site  
+ ```
  openssl s_client -showcerts -servername server -connect iam.cloud.ibm.com:443 > iamcert.pem
+ ```
  add in keystore
+ 
+ ```
  keytool -import -noprompt -trustcacerts -alias iamcerts -file ./iamcert.pem -keystore /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.91-0.b14.el6_7.x86_64/jre/lib/security/cacerts -storepass changeit
+ ```
  
  ## Generate certification with `extendedKeyUsage` openssl-111
  
