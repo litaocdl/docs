@@ -68,26 +68,31 @@ Verified OK
 ## s_client  模拟http客户端
 
 ### Check certification expired date 
-openssl s_client -servername NAME -connect HOST:PORT 2>/dev/null | openssl x509 -noout -dates
+`openssl s_client -servername NAME -connect HOST:PORT 2>/dev/null | openssl x509 -noout -dates`
 
 ### Check starttls certs
 
-openssl s_client -connect host:port -starttls smtp
+`openssl s_client -connect host:port -starttls smtp`
 
-### Who the certification issue to 
+### Who the certification issue to
+```
 openssl s_client -servername shellhacks.com -connect shellhacks.com:443 2>/dev/null | openssl x509 -noout -subject -issuer
-
+```
 ### Show the sha1 finger print
+```
 openssl s_client -servername www.shellhacks.com -connect www.shellhacks.com:443 2>/dev/null | openssl x509 -noout -fingerprint
+```
 
 ## show public key
 
-openssl s_client -connect localhost:55000 | openssl x509 -pubkey -noout
+`openssl s_client -connect localhost:55000 | openssl x509 -pubkey -noout`
 
 ## extract certification from db2 p12/kdb and use in jcc
 
+```
  gsk8capicmd_64 -cert -export -db xxx.p12 -stashed -label "xxx" -type p12 -target mycert.p12 
  openssl pkcs12 -in mycert.p12 -out test.pem -nokeys
+```
  
  use test.pem in jcc connection. sslCertLocation=test.pem
  
@@ -103,5 +108,7 @@ openssl s_client -connect localhost:55000 | openssl x509 -pubkey -noout
  
  ## Generate certification with `extendedKeyUsage` openssl-111
  
- openssl req -new -newkey rsa:2048 -x509 -days 730 -nodes  -out cert.crt -keyout cert.key -addext extendedKeyUsage=serverAuth -subj "/C=US/ST=CA/L=Silicon Valley Lab/O=Data and AI/OU=IBM Data Platform/emailAddress=ibm-analytics-data-platform@us.ibm.com/CN=IBM-Data-and-AI"
+ ```
+ openssl req -new -newkey rsa:2048 -x509 -days 730 -nodes  -out cert.crt -keyout cert.key -addext extendedKeyUsage=serverAuth -subj "/C=US/ST=CA/L=Silicon Valley Lab/O=Data and AI/OU=IBM Data Platform/emailAddress=xxxx"
+ ```
  
