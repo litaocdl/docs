@@ -97,9 +97,22 @@ openssl s_client -servername www.shellhacks.com -connect www.shellhacks.com:443 
  use test.pem in jcc connection. sslCertLocation=test.pem
  
  ## Get certification of a site  
+ 
+ if server support sni
  ```
- openssl s_client -showcerts -servername server -connect iam.cloud.ibm.com:443 > iamcert.pem
+ openssl s_client -showcerts -servername <servername> -connect servername:443 2>/dev/null | openssl x509 > cert.pem.pem
+ 
+ openssl s_client -showcerts -servername <servername> -connect servername:443 2>/dev/null | openssl x509  -outform DER > cert.pem.pem
+ 
+ 
  ```
+ 
+ if server not support sni
+ 
+ ```
+ openssl s_client -showcerts -connect iam.cloud.ibm.com:443 2>/dev/null | openssl x509 > iamcert.pem
+ ```
+ 
  add in keystore
  
  ```
