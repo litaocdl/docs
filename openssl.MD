@@ -125,3 +125,8 @@ openssl s_client -servername www.shellhacks.com -connect www.shellhacks.com:443 
  openssl req -new -newkey rsa:2048 -x509 -days 730 -nodes  -out cert.crt -keyout cert.key -addext extendedKeyUsage=serverAuth -subj "/C=US/ST=CA/L=Silicon Valley Lab/O=Data and AI/OU=IBM Data Platform/emailAddress=xxxx"
  ```
  
+## debug options 
+
+```
+openssl s_client -tlsextdebug -msg -connect xxxx:xxx
+```
