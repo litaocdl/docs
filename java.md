@@ -23,3 +23,10 @@ public class Collections {
 ```
 
 [Producer extends consumer super](https://www.liaoxuefeng.com/wiki/1252599548343744/1265105920586976)
+
+
+## 断言
+ enable assert `-enableassertions or -ea`
+ java -ea Main.java
+ 
+ if AssertException throw, program exit. by default assert is disabled.
