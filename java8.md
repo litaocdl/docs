@@ -121,3 +121,44 @@ need rewrite in java8, so java8 add `default stream` method in `Collection`
   1. if one class impls a interface which has default method, this interface is extends from another interface which also has same default method. the class will choose the `default` method in most closed interface. 
   
   2. if one class extends an abstract class and also impls a interface. the default method in the abstract class will be chose.  
+  
+  
+ ## sample of Fibonacci
+ 
+ ```
+ package Stream;
+
+import java.util.function.LongSupplier;
+import java.util.stream.LongStream;
+public class Fibonacci {
+    public static void main(String[] args){
+        LongStream st = LongStream.generate(new FibonacciSupplier());
+        st.limit(500).forEach(System.out::println);
+
+
+    }
+}
+    class FibonacciSupplier implements LongSupplier{
+        long first = 0 ;
+        long second = 0 ;
+
+        @Override
+        public long getAsLong() {
+            
+            if(second == 0){
+                first = 0 ;
+                second = 1 ;
+                return 1 ;
+            }else{
+                long result = first + second ;
+                first = second ;
+                second = result ;
+                return result ;
+            }
+    
+        }
+       
+        
+        
+    }
+ ```
