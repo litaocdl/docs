@@ -3,7 +3,7 @@
 
 Groups the function interface by the datatype it supports. function interfaces are defined in `java.util.function` packages.
 
-### 1. 0 params functioninterface
+###   0 params functioninterface
 
 * `Supplier<T>`
 
@@ -13,7 +13,7 @@ Groups the function interface by the datatype it supports. function interfaces a
 
   `()--> BooleanSupplier --> boolean`
   
-### 2. 1 params functionInterface
+###   1 params functionInterface
 
 * `Function<T,R>`: for all other kinds of XFunction, which is change the input params to X, like `DoubleFunction<R>` 
 is accept `double` input params. 
@@ -33,7 +33,7 @@ is accept `double` input params.
   `T --> Consumer  --> void` 
 
   
-### 3. 2 params functionInterface
+###  2 params functionInterface
 
 * `BiFunction<T,U,R>`
 
@@ -56,6 +56,36 @@ is accept `double` input params.
 * if function accept a basic type, it just starts with basic type, like
   
   long -> LongFunction -> T
+
+### 方法引用
+   除了可以使用Lamada表达式代替单接口方法之外，我们也可以直接用方法引用。如果一个静态方法，实例方法的签名和接口所需要的签名是一样的，我们就可以直接使用方法引用，这里的方法签名比较只比较
+   参数和返回值，不比较方法名称。
+   
+   比如： Arrays.sort(arrays,new Comparator<String>{xxx})
+   Comparator的签名是 int compare(String,String)
+  
+   如果我们有一个类的静态方法也是同样签名
+   
+   ```
+   class myclass{
+      public static int docompare(String,String){xxxx}
+   }
+   
+   ```
+   
+   我们就可以直接用方法引用
+   
+   ```
+    Arrays.sort(arrays,myclass::docompare)
+   ```
+   
+   同样，我们也可以用jdk的类中的方法,String.compareTo(String xxx) 虽然只有一个参数，但是是实例方法，this作为隐含参数传入了，所以签名也一样。
+   
+   ```
+   Arrays.sort(array, String::compareTo);
+   ```
+   
+   同样，我们可以用  `className::new` 引用相同签名的构造函数。
 
 ### Stream difference 
 
