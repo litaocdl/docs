@@ -36,9 +36,9 @@ If the longest matching prefix location has the “^~” modifier then regular e
 
 
 Prefix Check:  
-` `: no modifier, it is a prefix check, if request matches this rule then will be remembered and continue check regular expression.  
-`=`:  define the exactly match rule, if exactly match rule found, search `terminates`. 
-`^~`: if longest request match this location, will not further check regular expression, search will `terminates`. 
+` `   no modifier, it is a prefix check, if request matches this rule then will be remembered and continue check regular expression.  
+`=`   define the exactly match rule, if exactly match rule found, search `terminates`.    
+`^~`  if longest request match this location, will not further check regular expression, search will `terminates`.   
 
 Regular Expression Check:  
 `~*`: Regular expression matching, case-insensitive matching  
