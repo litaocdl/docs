@@ -90,7 +90,7 @@ openssl s_client -servername www.shellhacks.com -connect www.shellhacks.com:443 
 ## extract certification from db2 p12/kdb and use in jcc
 
 ```
- gsk8capicmd_64 -cert -export -db xxx.p12 -stashed -label "xxx" -type p12 -target mycert.p12 
+ gsk8capicmd_64 -cert -export -db sourcedb.kdb -stashed source.sth -label "xxx" -type p12 -target mycert.p12 
  openssl pkcs12 -in mycert.p12 -out test.pem -nokeys
 ```
  
