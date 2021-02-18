@@ -193,4 +193,15 @@ finally:
 
 ## 常用模块
 
+import math   #数学计算
+import datetime  #日期  
+import re #正则
+import json # json处理模块
+import threading #多线程
 
+## 图形界面
+pip install wxPython
+
+
+## 网络
+import urllib.request
