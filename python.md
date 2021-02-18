@@ -118,6 +118,79 @@ Machine Learning Algorithmic .
      return i
 ```
 
-函数：定义在模块中，类之外
-嵌套函数：定义在函数中
-方法：定义在类中
+函数：定义在模块中，类之外  
+嵌套函数：定义在函数中  
+方法：定义在类中  
+
+lamada函数
+
+```
+  lamada 参数列表：函数体
+  
+  lamada函数是一种匿名函数，函数体不能包含多条语句，不能包含语句块，只能是单条语句,计算结果返回给lamada函数
+  
+  lamada a,b:a+b 
+  
+  def sum(a,b):
+     return lamada a,b:a+b
+```
+
+## 类
+
+类用来定义一种新的数据类型
+
+```
+class 类名[(父类)]:
+   类体
+父类省略即为继承自object类
+
+# pass 用来站位
+class car:
+   pass
+
+# __init__是构造方法，用于初始化成员变量，两个下划线
+class dog:
+   __numberOflegs=4  #类变量，属于类不属于实例，所有类都可见，类似于静态变量,__开头表示私有变量，只能类内部访问
+   def __init__(self,name,age):
+      self.name=name
+      self.age=age
+   #实例方法，第一个参数是self
+   def run(self)
+      print('{}快跑'.format(self.name))
+      
+   #类方法，类似于静态方法,cls代表dog类
+   @classmethod
+   def numberOfLegs(cls)
+      print('docs has{}legs'.format(dog.numberOflegs))
+      
+myDog= dog('kelvn',12)
+
+
+## 继承,只有公有的方法和变量会被继承。如果多个继承的时候方法和变量冲突，从左到右优先级由高到底
+
+class chinaDog(dog):
+   def __init__(self,name,age,color):
+       super.__init__(name,age)
+       self.color=color
+       
+       
+class chinaDog(dog,animal):
+   pass
+
+```
+
+## 异常处理  
+异常的父类是Exception,需要的话自定义  
+```
+try:
+   xxx
+except xxxExcept as e:
+   xxx
+finally:
+   xxx
+
+```
+
+## 常用模块
+
+
