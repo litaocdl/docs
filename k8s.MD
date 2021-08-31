@@ -354,6 +354,11 @@ Etcd has size limitation (1M) for the values under one entry. so the configure m
   remove label
   `kubectl label node <> key-`
   
+  
+  
+### Operators   
+  [reference](https://www.cnblogs.com/rancherlabs/p/13595060.html?share_token=23C0D1D5-B6BA-4633-AC25-7277AA769A12&tt_from=weixin&utm_source=weixin&utm_medium=toutiao_ios&utm_campaign=client_share&wxshare_count=1)
+  
 ---
 ---
 
