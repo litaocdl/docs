@@ -379,6 +379,40 @@ Etcd has size limitation (1M) for the values under one entry. so the configure m
 ### Operators   
   [reference](https://www.cnblogs.com/rancherlabs/p/13595060.html?share_token=23C0D1D5-B6BA-4633-AC25-7277AA769A12&tt_from=weixin&utm_source=weixin&utm_medium=toutiao_ios&utm_campaign=client_share&wxshare_count=1)
   
+  
+  Operators is a special controller which extends the k8s api and hook the change of a series of CR, and based on the changes of the CR and do some actions. 
+  
+  `kube-controller-manager` could be recognized as the 'first' operator and all other operator is created after that. 
+  
+  ![image](https://user-images.githubusercontent.com/42050086/131469028-1b46480c-256e-482b-aa02-5e640200fab9.png)
+
+  To create a operator 
+  
+  1. create the CRD
+  2. impl the Resource Controlled CRD points to
+  3. create CR for the CRD.
+  4. debug. 
+  
+  reference: https://www.qikqiak.com/post/k8s-operator-101/
+  
+ two ways to add CR
+  1. use crd
+  2. use AA (Aggregation api)
+ 
+#### CRD 
+  
+  The steps to create a CRD 
+  
+  1. create the CRD definitation. the crd definiation may includes following
+     a. if using openAPI/v3, include the validation.
+     b. define the crd name, names, shortname, type, category, api endpoints etc. 
+     c. use kubectl apply xxx.yaml to create the crd.
+  2. according to the crd definiation, create the cr. 
+     a. cr follow the crd defined endpoint, name,type etc. 
+     b. use kubectl apply xxx.yaml
+  
+  
+  
 ---
 ---
 
