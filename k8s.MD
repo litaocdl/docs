@@ -200,6 +200,14 @@ Using `<nodeip>:<hostPort>` to access the pod services. make sure check which no
    Naming: <deployment> --> <deployment>-<random number> --> <deployment>-<random number>-<random string>
 
 
+## Service, Deployment, Pod
+  
+  [reference](https://www.cnblogs.com/rancherlabs/p/14860697.html)
+  
+  ![image](https://img-blog.csdnimg.cn/20210607214602153.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1JhbmNoZXJMYWJz,size_16,color_FFFFFF,t_70)
+
+  
+  
 ### Services - ClusterIP vs NodePort vs LoadBalancer vs Ingress
 
   ![](https://github.com/litaocdl/docs/blob/master/pics/k8s_services.png)
@@ -226,11 +234,23 @@ when a services is created, endpoints will be created for each pod and each port
 
 `NodePort` means services exposed to each node level which can be access from external using `<nodeIP>:<nodePort>`
   
-`LoadBalancer` means services exposed to public cloud load balance in external. using a cloud provider’s load balancer solution. and load balance will map to automatically created nodePort.
+  ![image](https://user-images.githubusercontent.com/42050086/131457450-3d08e72e-8292-4476-9913-22b2104606e0.png)
 
+  
+`LoadBalancer` means services exposed to public cloud load balance in external. using a cloud provider’s load balancer solution. and load balance will map to automatically created nodePort.
+  
+   Expensive: One load Balancer per service
+
+  ![image](https://user-images.githubusercontent.com/42050086/131457603-d2bb8d50-c3f7-436a-a4db-72d448349dfd.png)
+
+  
 For both `<clusterip>:<port>` or `<nodeip>:<nodeport>` access, the kube-proxy will create a access rule in iptables to reroute the access. 
   
 `Ingress` Ingress acts like reverse proxy, which exposed it self as nodeport, clusterip or loadbalancer, and redirect the rule based on the configuration rules to clusterips. 
+
+  Cheap: One load balance for multiple services
+  
+  ![image](https://user-images.githubusercontent.com/42050086/131457768-24c1f576-06a3-4fc2-ac69-f5540d55b3a0.png)
 
 Reference [clusterip vs nodeport and ingress](https://www.ovh.com/blog/getting-external-traffic-into-kubernetes-clusterip-nodeport-loadbalancer-and-ingress/)
   
