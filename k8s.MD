@@ -330,6 +330,12 @@ A diagram from web for those three
 
 
 
+  
+### Port forwarding
+  kubectl port-forward [service/pod/deployment/rs]. local:remote
+  kubectl port-forward service/xxx 5454:5432 
+  
+  localhost:5454:service/xxx:5432
 
 ### Job
 
