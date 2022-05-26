@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debian
+spec:
+  automountServiceAccountToken: false
+  containers:
+  - image: debian:buster-20220509-slim
+    name: debian
+    command: [ "/bin/sh", "-c"]
+    args: ["-c", "while true; do echo hello; sleep 10;done"]
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
